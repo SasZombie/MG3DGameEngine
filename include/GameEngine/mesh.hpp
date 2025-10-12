@@ -25,7 +25,7 @@ struct Vertex
 	glm::vec3 normals;
 	glm::vec2 textureCoords;
 
-	Vertex() = default;
+	Vertex() noexcept = default;
 
 	Vertex(float pos_x, float pos_y, float pos_z) noexcept
 		: pos(pos_x, pos_y, pos_z)
