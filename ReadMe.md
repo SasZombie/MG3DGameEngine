@@ -1,0 +1,1 @@
+[1]: Credit is due to Dr. Iulia-Cristina Stănică, Lecturer, Department of Engineering in Foreign Languages, from National University of Science and Technology POLITEHNICA Bucharest
