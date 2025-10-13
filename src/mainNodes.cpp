@@ -61,6 +61,7 @@ int main(int argc, char **argv)
 
     std::shared_ptr<sas::Asset> SunAsset = std::make_shared<sas::Asset>(sunShader, sun, &window);
     std::shared_ptr<sas::Asset> SkyBoxAsset = std::make_shared<sas::Asset>(shader, skyBox, &window);
+    std::shared_ptr<sas::Asset> KeyAsset = std::make_shared<sas::Asset>(shader, key, &window);
 
     glfwSetCursorPosCallback(window.getWindow(), mouse_callback);
     glfwSetMouseButtonCallback(window.getWindow(), mouse_callback);
@@ -68,17 +69,20 @@ int main(int argc, char **argv)
     glm::vec3 lightColor = glm::vec3(1.f);
     glm::vec3 lightPos = glm::vec3(10.f, 0.f, 0.f);
 
+    KeyAsset->rotate({0.f, 0.f, 90.f});
+
     SunAsset->translate(lightPos);
     float scale = 1.f;
     SunAsset->scale({scale, scale, scale});
 
     SkyBoxAsset->translate({0.f, 0.f, 0.f});
 
-    float scaleSky = 10.f;
+    float scaleSky = 100.f;
     SkyBoxAsset->scale({scaleSky, scaleSky, scaleSky});
     SkyBoxAsset->rotate({0.f, 0.f, 0.f});
 
     root->addNode(SunAsset);
+    root->addNode(KeyAsset);
     root->addNode(SkyBoxAsset);
 
    	glEnable(GL_DEPTH_TEST);
@@ -145,7 +149,7 @@ void mouse_callback(GLFWwindow *glWindow, int button, int action, int mods) noex
 
 void processKeyboardInput() noexcept
 {
-    float cameraSpeed = 100 * deltaTime;
+    float cameraSpeed = 60 * deltaTime;
 
     // if (window.isPressed(GLFW_KEY_ESCAPE) && canPressKey)
     // {
@@ -159,7 +163,7 @@ void processKeyboardInput() noexcept
     // }
 
     if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
-        cameraSpeed = cameraSpeed * 4;
+        cameraSpeed = cameraSpeed * 2;
 
     glm::vec3 direction(0.f);
     if (window.isPressed(GLFW_KEY_W))
@@ -171,7 +175,7 @@ void processKeyboardInput() noexcept
     if (window.isPressed(GLFW_KEY_D))
         direction += camera->getCameraRight();
 
-    // direction.y = 0.f;
+    direction.y = 0.f;
 
     if (glm::length(direction) > 0.f)
     {

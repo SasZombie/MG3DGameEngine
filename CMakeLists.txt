@@ -47,8 +47,10 @@ set(SOURCESNODES
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith -Wmissing-declarations -Winline -Wundef -Wcast-qual -Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -pedantic -fsanitize=undefined -fsanitize=address -fsanitize=leak")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-add_executable(main ${SOURCES})
+# add_executable(main ${SOURCES})
+# target_link_libraries(main PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
+
+
 add_executable(main2 ${SOURCESNODES})
 
-target_link_libraries(main PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
 target_link_libraries(main2 PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
