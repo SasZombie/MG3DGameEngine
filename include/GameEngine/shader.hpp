@@ -3,9 +3,11 @@
 
 #pragma once
 
+//Very lightweight class
 class Shader
 {
 public:
+	Shader() noexcept = default;
 	Shader(const char* vertexPath, const char* fragmentPath);
 	~Shader() noexcept = default;
 	void use() const noexcept;

@@ -17,6 +17,8 @@ set(ENGINE_SOURCES
    src/UI.cpp
    src/shader.cpp
    src/window.cpp
+   src/SceneNode.cpp
+   src/Asset.cpp
 )
 
 file(GLOB_RECURSE BACKENDS_SOURCES

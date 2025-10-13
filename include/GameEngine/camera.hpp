@@ -14,8 +14,9 @@
 #pragma GCC diagnostic pop
 
 #include "window.hpp"
+#include "SceneNode.hpp"
 
-class Camera
+class Camera : public sas::SceneNode
 {
 	private:
 		float cameraHeight = -10.f;
@@ -24,8 +25,7 @@ class Camera
 		glm::vec3 cameraViewDirection;
 		glm::vec3 cameraUp;
 		glm::vec3 cameraRight;
-
-
+		
 	public:
 		Camera() noexcept;
 		Camera(const glm::vec3& cameraPosition) noexcept;
@@ -63,9 +63,10 @@ class Camera
 		void setCameraPosition(const glm::vec3 &newDir) noexcept;
 		void setCameraViewDirection(const glm::vec3 &newDir) noexcept;
 
-
 		float getCameraHeight() const noexcept;
-
+		
 		friend std::ostream& operator<<(std::ostream& os, const Camera& obj);
+
+
 };
 

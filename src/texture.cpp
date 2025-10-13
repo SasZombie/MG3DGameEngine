@@ -91,3 +91,15 @@ GLuint loadBMP(const char *imagepath)
 	// Return the ID of the texture
 	return textureID;
 }
+
+std::vector<Texture> getDefaultTexture(const char *imagepath)
+{
+	size_t tex = loadBMP(imagepath);
+
+	std::vector<Texture> textures;
+	textures.emplace_back();
+	textures[0].id = tex;
+	textures[0].type = "texture_diffuse";
+
+	return textures;
+}
