@@ -40,35 +40,32 @@ void sas::Asset::basicPVM(const Camera *camera) noexcept
     ViewMatrix = glm::lookAt(camera->getCameraPosition(), camera->getCameraPosition() + camera->getCameraViewDirection(), camera->getCameraUp());
 }
 
-void sas::Asset::draw() noexcept
-{
-    if(!mesh)
-    {
-        std::cerr << "Warning! Trying to draw without a mesh\n";
-        return;
-    }
-    
+void sas::Asset::draw(const Camera *camera) noexcept
+{  
     shader.use();
 
-    MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+    basicPVM(camera);
+
+    MVP = ProjectionMatrix * ViewMatrix * transform.getModelMatrix();
     glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
+    
 
     mesh->draw(shader);
 }
 
 void sas::Asset::translate(const glm::vec3 &newPosition) noexcept
 {
-    this->ModelMatrix = glm::translate(this->ModelMatrix, newPosition);
+    transform.position = newPosition;
 }
 
 void sas::Asset::scale(const glm::vec3 &newScaleVector) noexcept
 {
-    this->ModelMatrix = glm::scale(this->ModelMatrix, newScaleVector);
+    transform.scale = newScaleVector;
 }
 
-void sas::Asset::rotate(float degrees, const glm::vec3 &axisVector) noexcept
+void sas::Asset::rotate(const glm::vec3 &axisVector) noexcept
 {
-    this->ModelMatrix = glm::rotate(this->ModelMatrix, degrees, axisVector);
+    transform.rotation = axisVector;
 }
 
 void sas::Asset::setShader(const Shader &nshader) noexcept
@@ -83,7 +80,6 @@ void sas::Asset::setShaderUniformID(int id) noexcept
 
 void sas::Asset::uppdate(const Camera* camera) noexcept
 {
-    basicPVM(camera);
-    draw();
+    draw(camera);
     SceneNode::uppdate(camera);
 }
