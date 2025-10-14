@@ -1,0 +1,31 @@
+
+    while (!glfwWindowShouldClose(window.getWindow()))
+    {
+       window.clear();
+
+        glUniform3f(glGetUniformLocation(shader.getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
+        glUniform3f(glGetUniformLocation(shader.getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
+
+        glDepthMask(GL_FALSE);
+        glDepthFunc(GL_LEQUAL);
+
+        SkyBoxAsset->draw(camera.get());
+
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
+        
+        SphereAsset->translate(camera->getCameraPosition());
+        
+        SphereAsset->draw(camera.get());
+        
+        std::vector<sas::Asset *> collidingObjects;
+        sas::queryCollisions(rootOctree, Sphere{camera->getCameraPosition(), camera->rad}, collidingObjects);
+
+
+        if (!collidingObjects.empty())
+        {
+            std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
+        }
+        window.update();
+    }

@@ -10,6 +10,7 @@
 
 #pragma GCC diagnostic pop
 
+#include "Frustum.hpp"
 
 sas::Asset::Asset(Window *nwindow) noexcept
     : window(nwindow)
@@ -25,7 +26,9 @@ sas::Asset::Asset(const Mesh &nmesh, Window *nwindow) noexcept
 sas::Asset::Asset(const Shader &nshader, const Mesh &nmesh, Window *nwindow) noexcept
     : shader(nshader), mesh(nmesh), window(nwindow)
 {
+    shader.use();
     setShaderUniformID(glGetUniformLocation(shader.getId(), "MVP"));
+    std::cout << uniformShaderID << '\n';
 }
 
 
@@ -41,18 +44,18 @@ void sas::Asset::basicPVM(const Camera *camera) noexcept
 }
 
 void sas::Asset::draw(const Camera *camera) noexcept
-{  
+{
     shader.use();
 
     basicPVM(camera);
 
     MVP = ProjectionMatrix * ViewMatrix * transform.getModelMatrix();
     glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
-    
 
     mesh->draw(shader);
 }
 
+//TODO: These 3 functions should uppdate the children as well
 void sas::Asset::translate(const glm::vec3 &newPosition) noexcept
 {
     transform.position = newPosition;
@@ -81,5 +84,6 @@ void sas::Asset::setShaderUniformID(int id) noexcept
 void sas::Asset::uppdate(const Camera* camera) noexcept
 {
     draw(camera);
+
     SceneNode::uppdate(camera);
 }

@@ -54,6 +54,8 @@ glm::vec3 Camera::getCameraRight() const noexcept
 void Camera::move(const glm::vec3 &newPos) noexcept
 {
     cameraPosition += newPos;
+    // hitbox.sphereHitbox.center = cameraPosition;
+    // hitbox.sphereHitbox.radius = 100.f;
 }
 
 void Camera::keyboardMoveUp(float cameraSpeed)
@@ -70,6 +72,14 @@ void Camera::setCameraViewDirection(const glm::vec3 &newDir) noexcept
 {
     this->cameraViewDirection = newDir;
     this->cameraRight = glm::cross(cameraViewDirection, cameraUp);
+}
+
+void Camera::uppdate(const Camera *camera) noexcept
+{   
+    //Dont need the pointer to self
+    (void)camera;
+
+    frust.update(getProjectionMatrix(), getViewMatrix());
 }
 
 float Camera::getCameraHeight() const noexcept
@@ -100,6 +110,12 @@ void Camera::setCameraZ(const float poz) noexcept
 glm::mat4 Camera::getViewMatrix() const noexcept
 {
     return glm::lookAt(cameraPosition, cameraPosition + cameraViewDirection, cameraUp);
+}
+
+glm::mat4 Camera::getProjectionMatrix() const noexcept
+{
+    //Hardcoded for now, maybe I will adapt it
+    return glm::perspective(glm::radians(90.f), 16.f / 9.f, 1.f, 100.f);
 }
 
 glm::vec3 Camera::getCameraPosition() const noexcept

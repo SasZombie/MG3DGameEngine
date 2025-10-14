@@ -11,12 +11,14 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 #include "Asset.hpp"
 
 namespace sas
 {
 
-    struct OctreeNode
+    // Just so I can draw it for testing
+    struct OctreeNode : public Asset
     {
         glm::vec3 minBounds;
         glm::vec3 maxBounds;
@@ -26,74 +28,103 @@ namespace sas
         int depth;
         int maxObjects = 5;
 
-        OctreeNode(const glm::vec3 &minB, const glm::vec3 &maxB, int d = 0) noexcept;
+        OctreeNode(const glm::vec3 &minB, const glm::vec3 &maxB, const Asset &ass, int d = 0) noexcept;
 
         bool isLeaf() const noexcept;
 
+        void subdivide()
+        {
+            glm::vec3 center = (minBounds + maxBounds) * 0.5f;
+
+            for (int i = 0; i < 8; ++i)
+            {
+                glm::vec3 childMin = minBounds;
+                glm::vec3 childMax = center;
+
+                // Set x, y, z based on i
+                if (i & 1)
+                    childMin.x = center.x;
+                else
+                    childMax.x = center.x;
+                if (i & 2)
+                    childMin.y = center.y;
+                else
+                    childMax.y = center.y;
+                if (i & 4)
+                    childMin.z = center.z;
+                else
+                    childMax.z = center.z;
+
+                Asset subDiv = static_cast<Asset&>(*this);
+                subDiv.transform.scale = subDiv.transform.scale * glm::vec3{0.5, 0.5, 0.5};
+                children[i] = std::make_unique<OctreeNode>(childMin, childMax, subDiv, depth + 1);
+            }
+        }
+
+        void insert(Asset *obj, const glm::vec3 &objPos)
+        {
+            if (!isLeaf())
+            {
+                // Push into appropriate child
+                for (auto &child : children)
+                {
+                    if (child->contains(objPos))
+                    {
+                        child->insert(obj, objPos);
+                        return;
+                    }
+                }
+            }
+
+            objects.push_back(obj);
+
+            if (objects.size() > maxObjects && depth < 8)
+            {
+                if (isLeaf())
+                    subdivide();
+
+                for (auto it = objects.begin(); it != objects.end();)
+                {
+                    bool moved = false;
+                    for (auto &child : children)
+                    {
+                        if (child->contains((*it)->transform.position))
+                        {
+                            child->insert(*it, (*it)->transform.position);
+                            it = objects.erase(it);
+                            moved = true;
+                            break;
+                        }
+                    }
+                    if (!moved)
+                        ++it;
+                }
+            }
+        }
+
+        bool contains(const glm::vec3 &point) const
+        {
+            return (point.x >= minBounds.x && point.x <= maxBounds.x) &&
+                   (point.y >= minBounds.y && point.y <= maxBounds.y) &&
+                   (point.z >= minBounds.z && point.z <= maxBounds.z);
+        }
+
+        void traverse(std::function<void(OctreeNode &)> func)
+        {
+            func(*this);
+            if (!isLeaf())
+            {
+                for (auto &child : children)
+                {
+                    if (child)
+                    {
+                        child->traverse(func);
+                    }
+                }
+            }
+        }
+
         ~OctreeNode() noexcept = default;
     };
-
-    void subdivide(OctreeNode *node)
-    {
-        glm::vec3 center = (node->minBounds + node->maxBounds) * 0.5f;
-        for (int i = 0; i < 8; ++i)
-        {
-            glm::vec3 newMin = node->minBounds;
-            glm::vec3 newMax = center;
-
-            if (i & 1)
-                newMin.x = center.x, newMax.x = node->maxBounds.x;
-            if (i & 2)
-                newMin.y = center.y, newMax.y = node->maxBounds.y;
-            if (i & 4)
-                newMin.z = center.z, newMax.z = node->maxBounds.z;
-
-            node->children[i] = std::make_unique<OctreeNode>(newMin, newMax, node->depth + 1);
-        }
-    }
-
-    bool intersects(const glm::vec3 &minA, const glm::vec3 &maxA,
-                    const glm::vec3 &minB, const glm::vec3 &maxB)
-    {
-        return (minA.x <= maxB.x && maxA.x >= minB.x) &&
-               (minA.y <= maxB.y && maxA.y >= minB.y) &&
-               (minA.z <= maxB.z && maxA.z >= minB.z);
-    }
-
-    void insert(OctreeNode *node, Asset *asset)
-    {
-        // Compute asset bounding box (use transform + mesh bounds)
-        glm::vec3 assetMin = asset->transform.position - 100.f;
-        glm::vec3 assetMax = asset->transform.position + 100.f;
-                                                                // asset->mesh->boundingRadius
-
-        // If asset doesn't intersect this node, skip
-        if (!intersects(node->minBounds, node->maxBounds, assetMin, assetMax))
-            return;
-
-        if (node->isLeaf() && node->objects.size() < node->maxObjects)
-        {
-            node->objects.push_back(asset);
-            return;
-        }
-
-        if (node->isLeaf())
-        {
-            subdivide(node); // create 8 children
-            // redistribute existing objects
-            for (Asset *a : node->objects)
-            {
-                for (int i = 0; i < 8; ++i)
-                    insert(node->children[i].get(), a);
-            }
-            node->objects.clear();
-        }
-
-        // Insert the new asset into appropriate children
-        for (int i = 0; i < 8; ++i)
-            insert(node->children[i].get(), asset);
-    }
-
-    
 
 } // namespace sas

@@ -22,13 +22,14 @@ namespace sas
         {
             glm::mat4 M = glm::mat4(1.0f);
             
+            M = glm::translate(M, position);
+            
             M = glm::scale(M, scale);
-
+            
             M = glm::rotate(M, rotation.x, glm::vec3{1.f, 0.f, 0.f});
             M = glm::rotate(M, rotation.y, glm::vec3{0.f, 1.f, 0.f});
             M = glm::rotate(M, rotation.z, glm::vec3{0.f, 0.f, 1.f});
             
-            M = glm::translate(M, position);
             
             return M;
         }

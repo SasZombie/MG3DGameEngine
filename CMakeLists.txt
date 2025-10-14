@@ -18,6 +18,7 @@ set(ENGINE_SOURCES
    src/window.cpp
    src/SceneNode.cpp
    src/Asset.cpp
+   src/OctreeNode.cpp
 )
 
 

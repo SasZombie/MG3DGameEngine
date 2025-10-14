@@ -511,7 +511,7 @@ namespace sas
             float theta = dotProduct(q1, q2);
             float sinTheta = std::sin(theta);
 
-            return (q1 * (std::sin((1 - theta * theta)) / sinTheta)) + (q2 * (std::sin(theta * t) / sinTheta));
+            return (q1 * (std::sin((1 - theta) * theta)) / sinTheta) + (q2 * (std::sin(theta * t) / sinTheta));
         }
 
     } // namespace math

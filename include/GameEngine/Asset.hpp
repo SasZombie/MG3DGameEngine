@@ -1,11 +1,11 @@
-#pragma once
+ #pragma once
 
 #include <optional>
 
 #include "mesh.hpp"
 #include "window.hpp"
-#include "camera.hpp"
 #include "Transform.hpp"
+#include "camera.hpp"
 
 
 //Something that you can draw on the screen
@@ -15,6 +15,7 @@ namespace sas
     class Asset : public SceneNode
     {
     public:
+        float boundingRadius = 0.1f; //This is extremmmly temporary
         int uniformShaderID;
         Transform transform;
         
@@ -30,6 +31,7 @@ namespace sas
 
     public:
         //Not owining window
+        Asset() = default;
         Asset(Window *window) noexcept;
         Asset(const Mesh& mesh, Window *window) noexcept;
         Asset(const Shader& shader, const Mesh& mesh, Window *window) noexcept;

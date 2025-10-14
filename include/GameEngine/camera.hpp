@@ -15,6 +15,8 @@
 
 #include "window.hpp"
 #include "SceneNode.hpp"
+#include "Frustum.hpp"
+#include "CollisionObjects.hpp"
 
 class Camera : public sas::SceneNode
 {
@@ -25,8 +27,10 @@ class Camera : public sas::SceneNode
 		glm::vec3 cameraViewDirection;
 		glm::vec3 cameraUp;
 		glm::vec3 cameraRight;
-		
+
 	public:
+		float rad = 100.f;
+		Frustum frust;
 		Camera() noexcept;
 		Camera(const glm::vec3& cameraPosition) noexcept;
 		Camera(const glm::vec3& cameraPosition, const glm::vec3& cameraViewDirection, const glm::vec3& cameraUp) noexcept;
@@ -34,6 +38,7 @@ class Camera : public sas::SceneNode
 
 		glm::vec3 getCameraUp() const noexcept;
 		glm::mat4 getViewMatrix() const noexcept;
+		glm::mat4 getProjectionMatrix() const noexcept;
 		glm::vec3 getCameraPosition() const noexcept;
 		glm::vec3 getCameraViewDirection() const noexcept;
 		glm::vec3 getCameraRight() const noexcept;
@@ -63,10 +68,9 @@ class Camera : public sas::SceneNode
 		void setCameraPosition(const glm::vec3 &newDir) noexcept;
 		void setCameraViewDirection(const glm::vec3 &newDir) noexcept;
 
+		void uppdate(const Camera* camera) noexcept override;
 		float getCameraHeight() const noexcept;
 		
 		friend std::ostream& operator<<(std::ostream& os, const Camera& obj);
-
-
 };
 
