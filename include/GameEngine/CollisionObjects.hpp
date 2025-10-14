@@ -9,6 +9,7 @@
 
 #pragma GCC diagnostic pop
 
+//Sphere : public Octree
 struct Sphere
 {
     glm::vec3 center;

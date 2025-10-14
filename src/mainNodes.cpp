@@ -42,44 +42,6 @@ glm::vec3 keyPosition(322.f, -20.f, 404.f);
 Window window("Game Engine", 1920, 1080);
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
 
-namespace sas
-{
-
-    bool intersects(const AABB &box, const Sphere &sphere)
-    {
-        // Find closest point on box to sphere center
-        glm::vec3 closest = glm::clamp(sphere.center, box.min, box.max);
-        // Distance squared
-        float distSq = glm::length2(closest - sphere.center);
-        return distSq <= sphere.radius * sphere.radius;
-    }
-    void queryCollisions(OctreeNode &node, const Sphere &camera, std::vector<Asset *> &collisions)
-    {
-        if (!intersects({node.minBounds, node.maxBounds}, camera))
-            return; // skip this node
-
-        // Check objects in this node
-        for (Asset *obj : node.objects)
-        {
-            // simple distance check (assume obj->position exists)
-            float r = 1.0f; // or obj radius
-            if (glm::distance2(obj->transform.position, camera.center) <= (camera.radius + r) * (camera.radius + r))
-                collisions.push_back(obj);
-        }
-
-        // Recurse into children
-        if (!node.isLeaf())
-        {
-            for (auto &child : node.children)
-            {
-                if (child)
-                    queryCollisions(*child, camera, collisions);
-            }
-        }
-    }
-
-}
-
 int main(int argc, char **argv)
 {
     std::shared_ptr<sas::SceneNode> root = std::make_shared<sas::SceneNode>();
@@ -196,26 +158,27 @@ int main(int argc, char **argv)
     CubeAsset->translate({0, 0, 0});
     CubeAsset->scale({100.f, 100.f, 100.f});
 
-    sas::OctreeNode rootOctree({minMax, minMax, minMax}, {minMax, minMax, minMax}, *CubeAsset.get());
+    // sas::OctreeNode rootOctree({minMax, minMax, minMax}, {minMax, minMax, minMax}, *CubeAsset.get());
 
-    rootOctree.insert(SunAsset.get(), SunAsset.get()->transform.position);
-    rootOctree.insert(KeyAsset1.get(), KeyAsset1.get()->transform.position);
-    rootOctree.insert(KeyAsset2.get(), KeyAsset2.get()->transform.position);
-    rootOctree.insert(KeyAsset3.get(), KeyAsset3.get()->transform.position);
-    rootOctree.insert(KeyAsset4.get(), KeyAsset4.get()->transform.position);
-    rootOctree.insert(KeyAsset5.get(), KeyAsset5.get()->transform.position);
-    rootOctree.insert(KeyAsset6.get(), KeyAsset6.get()->transform.position);
-    rootOctree.insert(KeyAsset1.get(), KeyAsset11.get()->transform.position);
-    rootOctree.insert(KeyAsset2.get(), KeyAsset22.get()->transform.position);
-    rootOctree.insert(KeyAsset3.get(), KeyAsset33.get()->transform.position);
-    rootOctree.insert(KeyAsset4.get(), KeyAsset44.get()->transform.position);
-    rootOctree.insert(KeyAsset5.get(), KeyAsset55.get()->transform.position);
-    rootOctree.insert(KeyAsset6.get(), KeyAsset66.get()->transform.position);
-    rootOctree.insert(KeyAsset.get(), KeyAsset.get()->transform.position);
+    // rootOctree.insert(SunAsset.get(), SunAsset.get()->transform.position);
+    // rootOctree.insert(KeyAsset1.get(), KeyAsset1.get()->transform.position);
+    // rootOctree.insert(KeyAsset2.get(), KeyAsset2.get()->transform.position);
+    // rootOctree.insert(KeyAsset3.get(), KeyAsset3.get()->transform.position);
+    // rootOctree.insert(KeyAsset4.get(), KeyAsset4.get()->transform.position);
+    // rootOctree.insert(KeyAsset5.get(), KeyAsset5.get()->transform.position);
+    // rootOctree.insert(KeyAsset6.get(), KeyAsset6.get()->transform.position);
+    // rootOctree.insert(KeyAsset1.get(), KeyAsset11.get()->transform.position);
+    // rootOctree.insert(KeyAsset2.get(), KeyAsset22.get()->transform.position);
+    // rootOctree.insert(KeyAsset3.get(), KeyAsset33.get()->transform.position);
+    // rootOctree.insert(KeyAsset4.get(), KeyAsset44.get()->transform.position);
+    // rootOctree.insert(KeyAsset5.get(), KeyAsset55.get()->transform.position);
+    // rootOctree.insert(KeyAsset6.get(), KeyAsset66.get()->transform.position);
+    // rootOctree.insert(KeyAsset.get(), KeyAsset.get()->transform.position);
 
     glEnable(GL_DEPTH_TEST);
 
-    SphereAsset->scale({camera->rad, camera->rad, camera->rad});
+    // SphereAsset->scale({camera->rad, camera->rad, camera->rad});
+    SphereAsset->translate({0.f, 0.f, 0.f});
 
     while (!glfwWindowShouldClose(window.getWindow()))
     {
@@ -254,12 +217,12 @@ int main(int argc, char **argv)
         KeyAsset55->draw(camera.get());
         KeyAsset66->draw(camera.get());
         
-        SphereAsset->translate(camera->getCameraPosition());
+        // SphereAsset->translate(camera->getCameraPosition());
         
         SphereAsset->draw(camera.get());
         
         std::vector<sas::Asset *> collidingObjects;
-        sas::queryCollisions(rootOctree, Sphere{camera->getCameraPosition(), camera->rad}, collidingObjects);
+        // sas::queryCollisions(rootOctree, Sphere{camera->getCameraPosition(), camera->rad}, collidingObjects);
 
 
         if (!collidingObjects.empty())
