@@ -14,7 +14,7 @@ namespace sas
     class Asset : public SceneNode
     {
     public:
-        float boundingRadius = 0.1f; //This is extremmmly temporary
+        float boundingRadius = 0.1f; //TODO: This is extremmmly temporary
         int uniformShaderID;
         
     private:

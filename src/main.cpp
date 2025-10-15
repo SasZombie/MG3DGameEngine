@@ -179,7 +179,7 @@ int main(int argc, char **argv)
     CubeAsset2->translate({22, 0, 20});
 
     root->addNode(CubeAsset);
-    // camera->addNode(KeyAsset);
+    camera->addNode(KeyAsset);
 
     KeyAsset->scale({5.f, 5.f, 5.f});
     KeyAsset->translate({40.f, 0.f, 0.f});
@@ -284,8 +284,6 @@ void mouse_callback(GLFWwindow *glWindow, int button, int action, int mods) noex
     {
         double xpos, ypos;
         glfwGetCursorPos(glWindow, &xpos, &ypos);
-
-
     }
 }
 

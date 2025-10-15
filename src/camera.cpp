@@ -56,10 +56,7 @@ glm::vec3 Camera::getCameraRight() const noexcept
 void Camera::move(const glm::vec3 &newPos) noexcept
 {
     cameraPosition += newPos;
-    for(auto& child : components)
-    {
-        
-    }
+    localTransform.position = cameraPosition;
 }
 
 void Camera::keyboardMoveUp(float cameraSpeed)
@@ -83,7 +80,11 @@ void Camera::uppdate(const Camera *camera) noexcept
     //Dont need the pointer to self
     (void)camera;
     //Camera does NOT use the transform. It is way more complex here
-    // updatePositions({cameraPosition, glm::vec3{0.f}, glm::vec3{1.f}});
+
+
+    sas::Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : sas::Transform{};
+    uppdateWorldTransform(parentWorld);
+
     SceneNode::uppdate(camera);
 
     frust.update(getProjectionMatrix(), getViewMatrix());

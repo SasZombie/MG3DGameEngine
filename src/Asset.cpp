@@ -85,9 +85,7 @@ void sas::Asset::uppdate(const Camera* camera) noexcept
 
     
     Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : Transform{};
-
     uppdateWorldTransform(parentWorld);
-    // updatePositions(transform);
 
     SceneNode::uppdate(camera);
 }
