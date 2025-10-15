@@ -1,5 +1,4 @@
 #include "meshLoaderObj.hpp"
-#include "stringTokenizer.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -12,6 +11,10 @@
 #include <glm/glm.hpp>
 
 #pragma GCC diagnostic pop
+
+#include <string>
+#include <sstream>
+#include "meshLoaderObj.hpp"
 
 static float _stringToFloat(const std::string &source)
 {

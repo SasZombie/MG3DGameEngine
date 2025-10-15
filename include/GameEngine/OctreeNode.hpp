@@ -12,82 +12,38 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include "SceneNode.hpp"
+
+#include "Asset.hpp"
 
 namespace sas
 {
-    class OctreeNode
+    class OctreeNode : SceneNode
     {
-
-    public:
-        OctreeNode() = default;
-        OctreeNode(const glm::vec3 &pos, const glm::vec3 &size)
-            : position(pos), sizexyz(size)
-        {
-        }
         glm::vec3 position;
         glm::vec3 sizexyz;
-
-        std::array<SceneNode, 5> elements;
+    
+        std::array<Asset, 5> elements;
         std::vector<OctreeNode> children;
+    
+        size_t maxObjects = 5;
+        size_t count = 0;
 
-        int maxObjects = 5;
-        int count = 0;
+    public:
+        //Only the root may call this
+        OctreeNode() noexcept = default;
+        OctreeNode(const glm::vec3 &pos, const glm::vec3 &size) noexcept;
 
-        bool isLeaf()
-        {
-            return children.empty();
-        }
-        void subdivide(const SceneNode &node)
-        {
-            count = 0;
-            float hw = sizexyz.x / 2;
-            float hh = sizexyz.y / 2;
-            float hd = sizexyz.z / 2;
+        bool isLeaf() const noexcept;
+        void subdivide(const Asset &node) noexcept;
+        size_t getOctan(const Asset &node) const noexcept;
 
-            children.emplace_back(glm::vec3{-hw / 2, -hh / 2, -hd / 2}, glm::vec3{hw, hh, hd});
-            children.emplace_back(glm::vec3{hw / 2, -hh / 2, hd / 2}, glm::vec3{hw, hh, hd});
-            children.emplace_back(glm::vec3{-hw / 2, hh / 2, -hd / 2}, glm::vec3{hw, hh, hd});
-            children.emplace_back(glm::vec3{hw / 2, hh / 2, -hd / 2}, glm::vec3{hw, hh, hd});
-            children.emplace_back(glm::vec3{-hw / 2, -hh / 2, hd / 2}, glm::vec3{hw, hh, hd});
-            children.emplace_back(glm::vec3{hw / 2, -hh / 2, hd / 2}, glm::vec3{hw, hh, hd});
-            children.emplace_back(glm::vec3{-hw / 2, hh / 2, hd / 2}, glm::vec3{hw, hh, hd});
-            children.emplace_back(glm::vec3{hw / 2, hh / 2, hd / 2}, glm::vec3{hw, hh, hd});
+        void insert(const Asset &node) noexcept;
 
-            for(size_t i = 0; i < maxObjects; ++i)
-            {
-                size_t octant = getOctan(elements[i]);
-                children[octant].insert(elements[i]);
-            }
-        }
+        bool intersectAABB(const glm::vec3 &pos1, const glm::vec3 &size1,
+                           const glm::vec3 &pos2, const glm::vec3 &size2) const noexcept;
 
-        size_t getOctan(const SceneNode &node)
-        {
-            int octan = 0;
-
-            if(position.x >= )
-        }
-
-        void insert(const SceneNode &node)
-        {
-            if (isLeaf())
-            {
-                if (count > maxObjects)
-                {
-                    subdivide(node);
-                }
-                else
-                {
-                    elements[count] = node;
-                    ++count;
-                }
-            }
-            else
-            {
-                size_t minDist = getOctan(node);
-                children[minDist].insert(node);
-            }
-        }
+        // The container could be something other than a std::vector
+        virtual void queryIntersection(const Asset &ast, std::vector<Asset> &results) const noexcept;
+        virtual ~OctreeNode() = default;
     };
-
 } // namespace sas

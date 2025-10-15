@@ -1,6 +1,7 @@
 #include "mesh.hpp"
-#include <GL/glew.h>
+#include "shader.hpp"
 
+#include <GL/glew.h>
 
 Mesh::Mesh(std::vector<Vertex> nVertices, std::vector<int> nIndices) noexcept
 	: vertices(nVertices), indices(nIndices)

@@ -13,13 +13,17 @@
 
 #pragma GCC diagnostic pop
 
-#include "window.hpp"
 #include "SceneNode.hpp"
 #include "Frustum.hpp"
-#include "CollisionObjects.hpp"
+
+namespace sas
+{
+	class Asset;
+}
 
 class Camera : public sas::SceneNode
 {
+
 	private:
 		float cameraHeight = -10.f;
 
@@ -29,7 +33,7 @@ class Camera : public sas::SceneNode
 		glm::vec3 cameraRight;
 
 	public:
-		float rad = 100.f;
+
 		Frustum frust;
 		Camera() noexcept;
 		Camera(const glm::vec3& cameraPosition) noexcept;
@@ -70,6 +74,7 @@ class Camera : public sas::SceneNode
 
 		void uppdate(const Camera* camera) noexcept override;
 		float getCameraHeight() const noexcept;
+
 		
 		friend std::ostream& operator<<(std::ostream& os, const Camera& obj);
 };

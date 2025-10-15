@@ -35,23 +35,23 @@ set(SOURCES
    ${ENGINE_SOURCES}
    ${BACKENDS_SOURCES}
    ${IAMGUI_SOURCES}
-   src/main.cpp
+   src/oldMain.cpp
 )
 
 set(SOURCESNODES
    ${ENGINE_SOURCES}
    ${BACKENDS_SOURCES}
    ${IAMGUI_SOURCES}
-   src/mainNodes.cpp
+   src/main.cpp
 )
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith -Wmissing-declarations -Winline -Wundef -Wcast-qual -Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -pedantic -fsanitize=undefined -fsanitize=address -fsanitize=leak")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # add_executable(main ${SOURCES})
-# target_link_libraries(main PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
+# target_link_libraries(oldMain PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
 
 
-add_executable(main2 ${SOURCESNODES})
+add_executable(main ${SOURCESNODES})
 
-target_link_libraries(main2 PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
+target_link_libraries(main PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)

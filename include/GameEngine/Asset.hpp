@@ -1,11 +1,10 @@
  #pragma once
 
 #include <optional>
-
-#include "mesh.hpp"
-#include "window.hpp"
-#include "Transform.hpp"
 #include "camera.hpp"
+#include "shader.hpp"
+#include "window.hpp"
+#include "mesh.hpp"
 
 
 //Something that you can draw on the screen
@@ -17,7 +16,6 @@ namespace sas
     public:
         float boundingRadius = 0.1f; //This is extremmmly temporary
         int uniformShaderID;
-        Transform transform;
         
     private:
         glm::mat4 ModelMatrix = glm::mat4(1.f);;    
@@ -43,6 +41,7 @@ namespace sas
         void rotate(const glm::vec3& axisVector) noexcept;
         void setShader(const Shader& shader) noexcept;
         void setShaderUniformID(int id) noexcept;
+
         
         void uppdate(const Camera* camera) noexcept override;
 

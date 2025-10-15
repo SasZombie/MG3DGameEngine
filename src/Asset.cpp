@@ -28,7 +28,6 @@ sas::Asset::Asset(const Shader &nshader, const Mesh &nmesh, Window *nwindow) noe
 {
     shader.use();
     setShaderUniformID(glGetUniformLocation(shader.getId(), "MVP"));
-    std::cout << uniformShaderID << '\n';
 }
 
 
@@ -49,26 +48,25 @@ void sas::Asset::draw(const Camera *camera) noexcept
 
     basicPVM(camera);
 
-    MVP = ProjectionMatrix * ViewMatrix * transform.getModelMatrix();
+    MVP = ProjectionMatrix * ViewMatrix * worldTransform.getModelMatrix();
     glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
 
     mesh->draw(shader);
 }
 
-//TODO: These 3 functions should uppdate the children as well
 void sas::Asset::translate(const glm::vec3 &newPosition) noexcept
 {
-    transform.position = newPosition;
+    localTransform.position = newPosition;
 }
 
 void sas::Asset::scale(const glm::vec3 &newScaleVector) noexcept
 {
-    transform.scale = newScaleVector;
+    localTransform.scale = newScaleVector;
 }
 
 void sas::Asset::rotate(const glm::vec3 &axisVector) noexcept
 {
-    transform.rotation = axisVector;
+    localTransform.rotation = axisVector;
 }
 
 void sas::Asset::setShader(const Shader &nshader) noexcept
@@ -84,6 +82,12 @@ void sas::Asset::setShaderUniformID(int id) noexcept
 void sas::Asset::uppdate(const Camera* camera) noexcept
 {
     draw(camera);
+
+    
+    Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : Transform{};
+
+    uppdateWorldTransform(parentWorld);
+    // updatePositions(transform);
 
     SceneNode::uppdate(camera);
 }

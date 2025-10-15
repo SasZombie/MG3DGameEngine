@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Asset.hpp"
+
 Camera::Camera() noexcept
     : cameraPosition({0.f, 0.f, 100.f}), cameraViewDirection({0.f, 0.f, -1.f}), cameraUp({0.f, 1.f, 0.f}),
       cameraRight(glm::cross(cameraViewDirection, cameraUp))
@@ -54,8 +56,10 @@ glm::vec3 Camera::getCameraRight() const noexcept
 void Camera::move(const glm::vec3 &newPos) noexcept
 {
     cameraPosition += newPos;
-    // hitbox.sphereHitbox.center = cameraPosition;
-    // hitbox.sphereHitbox.radius = 100.f;
+    for(auto& child : components)
+    {
+        
+    }
 }
 
 void Camera::keyboardMoveUp(float cameraSpeed)
@@ -78,6 +82,9 @@ void Camera::uppdate(const Camera *camera) noexcept
 {   
     //Dont need the pointer to self
     (void)camera;
+    //Camera does NOT use the transform. It is way more complex here
+    // updatePositions({cameraPosition, glm::vec3{0.f}, glm::vec3{1.f}});
+    SceneNode::uppdate(camera);
 
     frust.update(getProjectionMatrix(), getViewMatrix());
 }

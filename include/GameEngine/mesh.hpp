@@ -16,7 +16,6 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-
 #include "shader.hpp"
 
 struct Vertex
