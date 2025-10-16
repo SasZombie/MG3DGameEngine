@@ -86,6 +86,16 @@ void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
 void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 {
     
+<<<<<<< HEAD
+=======
+    // Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : Transform{};
+    // uppdateWorldTransform(parent.lock()->worldTransform);
+    // if(auto p = parent.lock())
+    // {
+    //     worldTransform = p->worldTransform.combine(localTransform);
+    // }
+    
+>>>>>>> 88b7fb6 (Stop)
     drawAttachedToCamera(camera);
     
     SceneNode::uppdateAttachedToCamera(camera);

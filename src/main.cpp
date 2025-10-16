@@ -178,6 +178,8 @@ int main(int argc, char **argv)
 
     // CamerasKey->addNode();
 
+    // CamerasKey->addNode();
+
     // rootOctree.insert(*KeyAsset.get());
     // rootOctree.insert(*CubeAsset.get());
     // rootOctree.insert(KeyAsset.get());

@@ -31,7 +31,11 @@ namespace sas
         virtual void uppdateAttachedToCamera(const Camera* camera) noexcept;
 
         void uppdateWorldTransform(const Transform& parentWorldTransform) noexcept;
+<<<<<<< HEAD
         // void uppdateWorldTransformCamera(const Transform& parentWorldTransform) noexcept;
+=======
+        void uppdateWorldTransformCamera(const Transform& parentWorldTransform) noexcept;
+>>>>>>> 88b7fb6 (Stop)
 
         virtual ~SceneNode() = default;
     };   
