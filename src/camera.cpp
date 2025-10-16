@@ -56,7 +56,6 @@ glm::vec3 Camera::getCameraRight() const noexcept
 void Camera::move(const glm::vec3 &newPos) noexcept
 {
     cameraPosition += newPos;
-    worldTransform.position = cameraPosition;
     localTransform.position = cameraPosition;
 }
 
@@ -78,16 +77,9 @@ void Camera::setCameraViewDirection(const glm::vec3 &newDir) noexcept
 
 void Camera::uppdate(const Camera *camera) noexcept
 {   
-    //Dont need the pointer to self
     (void)camera;
-    //Camera does NOT use the transform. It is way more complex here
-    uppdateWorldTransform(worldTransform);
-    // uppdateWorldTransformCamera(worldTransform);
-
-    // SceneNode::uppdateAttachedToCamera(camera);
-    SceneNode::uppdate(camera);
-
-    // frust.update(getProjectionMatrix(), getViewMatrix());
+    
+    SceneNode::uppdateAttachedToCamera(camera);
 }
 
 float Camera::getCameraHeight() const noexcept

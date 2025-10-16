@@ -168,13 +168,13 @@ int main(int argc, char **argv)
 
     root->addNode(KeyAsset1);
 
-    CamerasKey->scale({0.5f, 0.5f, 0.5f});
+    // CamerasKey->scale({0.5f, 0.5f, 0.5f});
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
-    CamerasKey->rotate({0.f, 0.f, 190.f});
+    // CamerasKey->rotate({0.f, 0.f, 190.f});
 
-    KeyAsset2->scale({0.5f, 0.5f, 0.5f});
+    // KeyAsset2->scale({0.5f, 0.5f, 0.5f});
     KeyAsset2->translate({0.8f, -0.4f, -5.5f});
-    KeyAsset2->rotate({0.f, 0.f, 90.f});
+    // KeyAsset2->rotate({0.f, 0.f, 90.f});
 
     // CamerasKey->addNode();
 

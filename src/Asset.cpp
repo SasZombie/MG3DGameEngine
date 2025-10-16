@@ -55,12 +55,29 @@ void sas::Asset::draw(const Camera *camera) noexcept
 
 void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
 {
-    shader.use();
+ ProjectionMatrix = camera->getProjectionMatrix();
 
-    basicPVM(camera);
+    // Compute world position using camera axes and local offset
+    glm::vec3 offset = localTransform.position;
+    glm::vec3 worldPos = camera->worldTransform.position +
+                         camera->getCameraRight() * offset.x +
+                         camera->getCameraUp() * offset.y +
+                         camera->getCameraViewDirection() * offset.z;
 
-    //No View Matrix if it is attached to camera
-    MVP = ProjectionMatrix * localTransform.getModelMatrix();
+    // Build rotation matrix from camera orientation
+    glm::mat4 camRot(1.0f);
+    camRot[0] = glm::vec4(camera->getCameraRight(), 0.0f);
+    camRot[1] = glm::vec4(camera->getCameraUp(), 0.0f);
+    camRot[2] = glm::vec4(-camera->getCameraViewDirection(), 0.0f);
+    camRot[3] = glm::vec4(0,0,0,1);
+
+    // Translation to world position
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), worldPos);
+
+    // Combine
+    glm::mat4 modelMatrix = translation * camRot;
+
+    MVP = ProjectionMatrix * modelMatrix;
     glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
 
     mesh->draw(shader);
@@ -68,13 +85,6 @@ void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
 
 void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 {
-    
-    // Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : Transform{};
-    // uppdateWorldTransform(parent.lock()->worldTransform);
-    // if(auto p = parent.lock())
-    // {
-    //     worldTransform = p->worldTransform.combine(localTransform);
-    // }
     
     drawAttachedToCamera(camera);
     
@@ -84,8 +94,6 @@ void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 void sas::Asset::uppdate(const Camera *camera) noexcept
 {
     draw(camera);
-
-    uppdateWorldTransform(parent.lock()->worldTransform);
 
     SceneNode::uppdate(camera);
 }
