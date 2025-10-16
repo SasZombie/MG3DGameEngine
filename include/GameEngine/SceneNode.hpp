@@ -28,6 +28,8 @@ namespace sas
         void addNode(SceneSharedNode child) noexcept;
 
         virtual void uppdate(const Camera* camera) noexcept;
+        virtual void uppdateAttachedToCamera(const Camera* camera) noexcept;
+
         void uppdateWorldTransform(const Transform& parentWorldTransform) noexcept;
 
         virtual ~SceneNode() = default;

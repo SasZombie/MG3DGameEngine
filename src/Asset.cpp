@@ -30,7 +30,6 @@ sas::Asset::Asset(const Shader &nshader, const Mesh &nmesh, Window *nwindow) noe
     setShaderUniformID(glGetUniformLocation(shader.getId(), "MVP"));
 }
 
-
 void sas::Asset::addMesh(const Mesh &nmesh) noexcept
 {
     this->mesh = nmesh;
@@ -52,6 +51,43 @@ void sas::Asset::draw(const Camera *camera) noexcept
     glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
 
     mesh->draw(shader);
+}
+
+void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
+{
+    shader.use();
+
+    basicPVM(camera);
+
+    //No View Matrix if it is attached to camera
+    MVP = ProjectionMatrix * localTransform.getModelMatrix();
+    glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
+
+    mesh->draw(shader);
+}
+
+void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
+{
+    
+    // Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : Transform{};
+    // uppdateWorldTransform(parent.lock()->worldTransform);
+    if(auto p = parent.lock())
+    {
+        worldTransform = p->worldTransform.combine(localTransform);
+    }
+    
+    drawAttachedToCamera(camera);
+    
+    SceneNode::uppdateAttachedToCamera(camera);
+}
+
+void sas::Asset::uppdate(const Camera *camera) noexcept
+{
+    draw(camera);
+
+    uppdateWorldTransform(parent.lock()->worldTransform);
+
+    SceneNode::uppdate(camera);
 }
 
 void sas::Asset::translate(const glm::vec3 &newPosition) noexcept
@@ -79,13 +115,3 @@ void sas::Asset::setShaderUniformID(int id) noexcept
     this->uniformShaderID = id;
 }
 
-void sas::Asset::uppdate(const Camera* camera) noexcept
-{
-    draw(camera);
-
-    
-    Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : Transform{};
-    uppdateWorldTransform(parentWorld);
-
-    SceneNode::uppdate(camera);
-}

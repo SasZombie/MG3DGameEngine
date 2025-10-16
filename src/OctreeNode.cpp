@@ -1,6 +1,5 @@
 #include "OctreeNode.hpp"
 
-
 sas::OctreeNode::OctreeNode(const glm::vec3 &pos, const glm::vec3 &size) noexcept
     : position(pos), sizexyz(size)
 {
@@ -10,7 +9,7 @@ bool sas::OctreeNode::isLeaf() const noexcept
 {
     return children.empty();
 }
-void sas::OctreeNode::subdivide(const Asset &node) noexcept
+void sas::OctreeNode::subdivide(Asset* node) noexcept
 {
     count = 0;
     float hw = sizexyz.x / 2;
@@ -31,11 +30,11 @@ void sas::OctreeNode::subdivide(const Asset &node) noexcept
     // Otherwise we wouldn't be here
     for (size_t i = 0; i < maxObjects; ++i)
     {
-        octant = getOctan(elements[i]);
+        octant = getOctan(*elements[i]);
         children[octant].insert(elements[i]);
     }
 
-    octant = getOctan(node);
+    octant = getOctan(*node);
     children[octant].insert(node);
 }
 
@@ -43,6 +42,7 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 {
     int octan = 0;
     const auto &nodePosition = node.worldTransform.position;
+    std::cout << "Node Position = " << nodePosition.x << ' ' << nodePosition.y << ' ' << nodePosition.z << '\n';
     if (position.x >= nodePosition.x)
         octan |= 1;
     if (position.y >= nodePosition.y)
@@ -53,24 +53,68 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
     return octan;
 }
 
-void sas::OctreeNode::insert(const Asset &node) noexcept
+void sas::OctreeNode::insert(Asset *node) noexcept
 {
+    std::cout << "Inserting\n";
+
     if (isLeaf())
     {
+        std::cout << "Am leaf\n";
+
         if (count >= maxObjects)
         {
             subdivide(node);
         }
         else
         {
+            const auto& nodePosition = node->localTransform.position;
+            std::cout << "Node Position = " << nodePosition.x << ' ' << nodePosition.y << ' ' << nodePosition.z << '\n';
+
             elements[count] = node;
             ++count;
         }
     }
     else
     {
-        size_t minDist = getOctan(node);
+        size_t minDist = getOctan(*node);
         children[minDist].insert(node);
+    }
+}
+
+void sas::OctreeNode::addHitboxAsset(Asset *asset) noexcept
+{
+    this->hitbox = asset;
+}
+
+// void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
+// {
+//     for (size_t i = 0; i < count; ++i)
+//     {
+//         const auto &asset = elements[i];
+//         hitbox->localTransform = asset->localTransform;
+//         hitbox->worldTransform = asset->worldTransform;
+//         hitbox->draw(camera);
+//     }
+// }
+
+void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
+{
+    for (size_t i = 0; i < count; ++i)
+    {
+        const auto &asset = elements[i];
+
+        hitbox->localTransform = asset->localTransform;
+        hitbox->worldTransform = asset->worldTransform;
+
+        if (auto p = asset->parent.lock())
+        {
+            if (std::dynamic_pointer_cast<Camera>(p))
+            {
+                hitbox->drawAttachedToCamera(camera);
+                continue;
+            }
+        }
+        hitbox->draw(camera);
     }
 }
 
@@ -83,7 +127,7 @@ bool sas::OctreeNode::intersectAABB(const glm::vec3 &pos1, const glm::vec3 &size
 }
 
 // The container could be something other than a std::vector
-void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::Asset> &results) const noexcept
+void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::Asset* > &results) const noexcept
 {
 
     if (!intersectAABB(position, sizexyz, ast.worldTransform.position, ast.worldTransform.scale))
@@ -94,7 +138,12 @@ void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::
         for (size_t i = 0; i < count; ++i)
         {
             const auto &asset = elements[i];
-            if (intersectAABB(asset.worldTransform.position, asset.worldTransform.scale, ast.worldTransform.position, ast.worldTransform.scale))
+            // TODO: Skip Self
+            //  if(asset == elements[i])
+            //      continue;
+
+            std::cout << "Comparing Intersection from " << asset->worldTransform << " \nWith " << ast.worldTransform << '\n'; 
+            if (intersectAABB(asset->worldTransform.position, asset->worldTransform.scale, ast.worldTransform.position, ast.worldTransform.scale))
             {
                 results.push_back(asset);
             }

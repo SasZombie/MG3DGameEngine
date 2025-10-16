@@ -9,6 +9,8 @@
 
 #pragma GCC diagnostic pop
 
+#include <iostream>
+
 namespace sas
 {
 
@@ -47,6 +49,8 @@ namespace sas
         bool operator==(const Transform &other) const
         {
             return position == other.position && rotation == other.rotation && scale == other.scale;
-        }
+        }    
     };
+    
+    std::ostream& operator<<(std::ostream& os, const Transform& t);
 } // namespace sas

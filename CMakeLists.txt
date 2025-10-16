@@ -19,6 +19,7 @@ set(ENGINE_SOURCES
    src/SceneNode.cpp
    src/Asset.cpp
    src/OctreeNode.cpp
+   src/Transform.cpp
 )
 
 

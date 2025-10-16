@@ -80,14 +80,11 @@ void Camera::uppdate(const Camera *camera) noexcept
     //Dont need the pointer to self
     (void)camera;
     //Camera does NOT use the transform. It is way more complex here
+    // uppdateWorldTransform(worldTransform);
 
+    SceneNode::uppdateAttachedToCamera(camera);
 
-    sas::Transform parentWorld = parent.lock() ? parent.lock()->worldTransform : sas::Transform{};
-    uppdateWorldTransform(parentWorld);
-
-    SceneNode::uppdate(camera);
-
-    frust.update(getProjectionMatrix(), getViewMatrix());
+    // frust.update(getProjectionMatrix(), getViewMatrix());
 }
 
 float Camera::getCameraHeight() const noexcept

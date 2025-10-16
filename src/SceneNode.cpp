@@ -24,6 +24,13 @@ void sas::SceneNode::uppdate(const Camera *camera) noexcept
     }
 }
 
+void sas::SceneNode::uppdateAttachedToCamera(const Camera *camera) noexcept
+{
+    for (auto &component : components)
+    {
+        component->uppdateAttachedToCamera(camera);
+    }
+}
 
 void sas::SceneNode::uppdateWorldTransform(const Transform &parentWorldTransform) noexcept
 {
@@ -31,4 +38,3 @@ void sas::SceneNode::uppdateWorldTransform(const Transform &parentWorldTransform
     for (auto &child : components)
         child->uppdateWorldTransform(worldTransform);
 }
-
