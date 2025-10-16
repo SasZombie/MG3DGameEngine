@@ -168,6 +168,7 @@ int main(int argc, char **argv)
 
     root->addNode(KeyAsset1);
 
+    //TODO: FIX THIS SHIT
     // CamerasKey->scale({0.5f, 0.5f, 0.5f});
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
     // CamerasKey->rotate({0.f, 0.f, 190.f});

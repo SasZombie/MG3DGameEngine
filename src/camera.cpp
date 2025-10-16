@@ -81,10 +81,10 @@ void Camera::uppdate(const Camera *camera) noexcept
 {
     (void)camera;
 
-     if (auto p = parent.lock()) 
-        uppdateWorldTransformCamera(p->worldTransform);
-    else 
-        uppdateWorldTransformCamera(sas::Transform{});  // Root camera
+    //  if (auto p = parent.lock()) 
+    //     uppdateWorldTransformCamera(p->worldTransform);
+    // else 
+    //     uppdateWorldTransformCamera(sas::Transform{});  // Root camera
 
     // uppdateWorldTransformCamera(parent.lock()->worldTransform);
     SceneNode::uppdateAttachedToCamera(camera);
