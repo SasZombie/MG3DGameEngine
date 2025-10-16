@@ -17,7 +17,7 @@
 #pragma GCC diagnostic pop
 
 #include "Asset.hpp"
-#include "OctreeNode.hpp"
+#include "CollisionObjects.hpp"
 #include "meshLoaderObj.hpp"
 #include "texture.hpp"
 // #include "shader.hpp"
@@ -39,6 +39,8 @@ glm::vec3 keyPosition(322.f, -20.f, 404.f);
 Window window("Game Engine", 1920, 1080);
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
 sas::OctreeNode rootOctree({0, 0, 0}, {100, 100, 100});
+
+bool showHitBoxes = false;
 
 int main(int argc, char **argv)
 {
@@ -174,16 +176,18 @@ int main(int argc, char **argv)
     KeyAsset2->translate({0.8f, -0.4f, -5.5f});
     KeyAsset2->rotate({0.f, 0.f, 90.f});
 
+    // CamerasKey->addNode();
+
     // rootOctree.insert(*KeyAsset.get());
     // rootOctree.insert(*CubeAsset.get());
     // rootOctree.insert(KeyAsset.get());
     // rootOctree.insert(CubeAsset.get());
     // rootOctree.insert(CubeAsset2.get());
     // rootOctree.insert(KeyAsset1.get());
-    rootOctree.insert(CamerasKey.get());
+    // rootOctree.insert(CamerasKey.get());
     // rootOctree.insert(KeyAsset2.get());
 
-    rootOctree.addHitboxAsset(FullCubeAsset.get());
+    // rootOctree.addHitboxAsset(FullCubeAsset.get());
 
     float rotation = 0;
 
@@ -221,6 +225,10 @@ int main(int argc, char **argv)
         KeyAsset1->rotate({0.f, 0.f, rotation});
 
         std::cout << "Hitbox camera = " << *camera << '\n'; 
+        std::cout << "Hand Key world = " << CamerasKey->worldTransform; 
+        std::cout << "Cube1 world = " << CubeAsset->worldTransform ;
+        std::cout << "Cube2 world = " << CubeAsset2->worldTransform ;
+
         // std::cout << "Hitbox \"Cube\" = " << CubeAsset->worldTransform << '\n'; 
 
 
@@ -230,17 +238,20 @@ int main(int argc, char **argv)
         // FullCubeAsset->localTransform = CubeAsset->localTransform;
         // FullCubeAsset->worldTransform = CubeAsset->worldTransform;
 
-        std::vector<sas::Asset* > collidingObjects;
+        // std::vector<sas::Asset* > collidingObjects;
 
-        rootOctree.queryIntersection(*CubeAsset.get(), collidingObjects);
+        // rootOctree.queryIntersection(*CubeAsset.get(), collidingObjects);
         
 
-        rootOctree.drawAsset(camera.get());
+        // if(showHitBoxes)
+        // {
+        //     rootOctree.drawAsset(camera.get());
+        // }
 
-        if (!collidingObjects.empty())
-        {
-            std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
-        }
+        // if (!collidingObjects.empty())
+        // {
+        //     std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
+        // }
 
         window.update();
     }
@@ -324,6 +335,10 @@ void processKeyboardInput(std::shared_ptr<sas::Asset> asset) noexcept
         camera->move(direction * cameraSpeed);
     }
 
+    if(window.isPressed(GLFW_KEY_H))
+    {
+        showHitBoxes = !showHitBoxes;
+    }
     if (window.isPressed(GLFW_KEY_SPACE))
     {
         asset->localTransform.position += glm::vec3{0.1f, 0, 0};

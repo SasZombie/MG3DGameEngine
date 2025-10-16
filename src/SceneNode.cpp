@@ -16,6 +16,16 @@ void sas::SceneNode::addNode(SceneSharedNode child) noexcept
     components.push_back(std::move(child));
 }
 
+void sas::SceneNode::uppdateWorldTransformCamera(const Transform &parentWorldTransform) noexcept
+{
+    worldTransform.position = parentWorldTransform.position + localTransform.position;
+    worldTransform.scale = localTransform.scale;
+    worldTransform.rotation = localTransform.rotation;
+    
+    for (auto &child : components)
+        child->uppdateWorldTransformCamera(worldTransform);
+}
+
 void sas::SceneNode::uppdate(const Camera *camera) noexcept
 {
     for (auto &component : components)
