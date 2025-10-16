@@ -27,7 +27,7 @@ class Camera : public sas::SceneNode
 	private:
 		float cameraHeight = -10.f;
 
-		glm::vec3 cameraPosition;
+		// glm::vec3 cameraPosition;
 		glm::vec3 cameraViewDirection;
 		glm::vec3 cameraUp;
 		glm::vec3 cameraRight;

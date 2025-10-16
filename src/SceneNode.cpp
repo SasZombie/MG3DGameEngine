@@ -18,10 +18,9 @@ void sas::SceneNode::addNode(SceneSharedNode child) noexcept
 
 void sas::SceneNode::uppdateWorldTransformCamera(const Transform &parentWorldTransform) noexcept
 {
-    worldTransform.position = parentWorldTransform.position + localTransform.position;
-    worldTransform.scale = localTransform.scale;
-    worldTransform.rotation = localTransform.rotation;
-    
+    // std::cout << "Camera local transform = " << localTransform << "\n parent World transform = " << parentWorldTransform << '\n' ;
+    worldTransform = parentWorldTransform.combine(localTransform);
+
     for (auto &child : components)
         child->uppdateWorldTransformCamera(worldTransform);
 }

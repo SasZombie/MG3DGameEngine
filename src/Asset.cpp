@@ -58,7 +58,7 @@ void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
     shader.use();
     ProjectionMatrix = camera->getProjectionMatrix();
 
-    glm::mat4 modelMatrix = worldTransform.getModelMatrix();
+    glm::mat4 modelMatrix = localTransform.getModelMatrix();
 
     MVP = ProjectionMatrix * modelMatrix;
 
