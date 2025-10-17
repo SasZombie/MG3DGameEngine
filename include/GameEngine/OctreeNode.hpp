@@ -17,7 +17,7 @@
 
 namespace sas
 {
-    class OctreeNode : SceneNode
+    class OctreeNode
     {
         glm::vec3 position;
         glm::vec3 sizexyz;
@@ -49,6 +49,8 @@ namespace sas
 
         // The container could be something other than a std::vector
         virtual void queryIntersection(const Asset &ast, std::vector<Asset* > &results) const noexcept;
+        //If any intersects
+        virtual void queryIntersection(std::vector<Asset* > &results) const noexcept;
         virtual ~OctreeNode() = default;
     };
 } // namespace sas

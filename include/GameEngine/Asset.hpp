@@ -13,6 +13,7 @@ namespace sas
 
     class Asset : public SceneNode
     {
+
     public:
         int uniformShaderID;
 

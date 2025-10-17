@@ -85,8 +85,14 @@ void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 {
     drawAttachedToCamera(camera);
 
+    if(collisionObject)
+    {
+        collisionObject->uppdateBounds(worldTransform);
+    }
+
     SceneNode::uppdateAttachedToCamera(camera);
 }
+
 
 void sas::Asset::addCollisionObject(CollisionObject *colObj) noexcept
 {
@@ -109,6 +115,16 @@ sas::CollisionObject* sas::Asset::getCollisionObject() const noexcept
 void sas::Asset::uppdate(const Camera *camera) noexcept
 {
     draw(camera);
+    //This is necesarry to not dereference nullptr
+    //The hitbox will probablly be 1 frame behind
+    //But at 60 fps this will not be noticible
+    //The propper way would be to do this in 
+    //Root->uppdateWorldPosition
+    //But I dont wanna do all those overloads
+    if(collisionObject)
+    {
+        collisionObject->uppdateBounds(worldTransform);
+    }
 
     SceneNode::uppdate(camera);
 }

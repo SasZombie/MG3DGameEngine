@@ -41,7 +41,7 @@ Window window("Game Engine", 1920, 1080);
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
 sas::OctreeNode rootOctree({0, 0, 0}, {100, 100, 100});
 
-bool showHitBoxes = false;
+bool showHitBoxes = true;
 
 int main(int argc, char **argv)
 {
@@ -65,7 +65,6 @@ int main(int argc, char **argv)
 
     Mesh fullCube = loadObj("Resources/Models/cube.obj");
 
-
     std::shared_ptr<sas::Asset> FullCubeAsset = std::make_shared<sas::Asset>(shader, fullCube, &window);
 
     std::shared_ptr<sas::Asset> SunAsset = std::make_shared<sas::Asset>(sunShader, sun, &window);
@@ -73,6 +72,7 @@ int main(int argc, char **argv)
     std::shared_ptr<sas::Asset> SkyBoxAsset = std::make_shared<sas::Asset>(shader, skyBox, &window);
     std::shared_ptr<sas::Asset> CubeAsset = std::make_shared<sas::Asset>(shader, cube, &window);
     std::shared_ptr<sas::Asset> CubeAsset2 = std::make_shared<sas::Asset>(shader, cube, &window);
+    std::shared_ptr<sas::Asset> CubeAsset3 = std::make_shared<sas::Asset>(shader, cube, &window);
     std::shared_ptr<sas::Asset> CamerasKey = std::make_shared<sas::Asset>(shader, key, &window);
     std::shared_ptr<sas::Asset> KeyAsset1 = std::make_shared<sas::Asset>(shader, key, &window);
     std::shared_ptr<sas::Asset> KeyAsset2 = std::make_shared<sas::Asset>(shader, key, &window);
@@ -146,7 +146,6 @@ int main(int argc, char **argv)
     float scale = 1.f;
     SunAsset->scale({scale, scale, scale});
 
-    
     float scaleSky = 100.f;
     SkyBoxAsset->translate({0.f, 0.f, 0.f});
     SkyBoxAsset->scale({scaleSky, scaleSky, scaleSky});
@@ -154,45 +153,49 @@ int main(int argc, char **argv)
 
     root->addNode(camera);
     camera->addNode(CamerasKey);
-    // CamerasKey->addNode(KeyAsset2);
 
     root->addNode(SkyBoxAsset);
 
     glEnable(GL_DEPTH_TEST);
 
-    CubeAsset->translate({20, 0, 20});
-
     root->addNode(CubeAsset);
-    CubeAsset2->translate({14, 0, 20});
+    CubeAsset->translate({40, 0, 20});
 
-    CubeAsset->addNode(CubeAsset2);
+    root->addNode(CubeAsset2);
+    CubeAsset2->translate({10, 0, 20});
+
+    root->addNode(CubeAsset3);
+    CubeAsset3->translate({15, 0, 20});
 
     root->addNode(KeyAsset1);
 
-    // CamerasKey->scale({0.5f, 0.5f, 0.5f});
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
-    // CamerasKey->rotate({0.f, 0.f, 190.f});
-
-    // KeyAsset2->scale({0.5f, 0.5f, 0.5f});
     KeyAsset2->translate({0.8f, -0.4f, -5.5f});
-    // KeyAsset2->rotate({0.f, 0.f, 90.f});
 
-    // CamerasKey->addNode();
+    float scaleMax = 10.f;
+    sas::CollisionObject *CubeCollisionObject = new sas::AABB{glm::vec3{0.f, 0.f, 0.f}, glm::vec3{scaleMax, scaleMax, scaleMax}};
+    sas::CollisionObject *Cube2CollisonObject = new sas::AABB{glm::vec3{0.f, 0.f, 0.f}, glm::vec3{scaleMax, scaleMax, scaleMax}};
+    sas::CollisionObject *Cube3CollisonObject = new sas::AABB{glm::vec3{0.f, 0.f, 0.f}, glm::vec3{scaleMax, scaleMax, scaleMax}};
 
-    // CamerasKey->addNode();
+    CubeAsset->addCollisionObject(CubeCollisionObject);
+    CubeAsset2->addCollisionObject(Cube2CollisonObject);
+    CubeAsset3->addCollisionObject(Cube3CollisonObject);
 
-    // rootOctree.insert(*KeyAsset.get());
-    // rootOctree.insert(*CubeAsset.get());
-    // rootOctree.insert(KeyAsset.get());
-    // rootOctree.insert(CubeAsset.get());
-    // rootOctree.insert(KeyAsset1.get());
+    rootOctree.insert(CubeAsset.get());
     rootOctree.insert(CubeAsset2.get());
-    rootOctree.insert(CamerasKey.get());
-    // rootOctree.insert(KeyAsset2.get());
+    rootOctree.insert(CubeAsset3.get());
 
     rootOctree.addHitboxAsset(FullCubeAsset.get());
 
     float rotation = 0;
+    float positionX = CubeAsset3->localTransform.position.x;
+    int negative = 1;
+
+    //Initial Set-up
+    root->uppdateWorldTransform({});
+    root->uppdate(camera.get());
+
+
 
     while (!glfwWindowShouldClose(window.getWindow()))
     {
@@ -208,10 +211,10 @@ int main(int argc, char **argv)
         glUniform3f(glGetUniformLocation(shader.getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
 
-        //TODO: Add support for these functions
-        // When rendering SkyBox (Make a special field for it)
-        // glDepthMask(GL_FALSE);
-        // glDepthFunc(GL_LEQUAL);
+        // TODO: Add support for these functions
+        //  When rendering SkyBox (Make a special field for it)
+        //  glDepthMask(GL_FALSE);
+        //  glDepthFunc(GL_LEQUAL);
 
         // SkyBoxAsset->draw(camera.get());
 
@@ -220,41 +223,48 @@ int main(int argc, char **argv)
 
         rotation = rotation + 5 * deltaTime;
 
-        if(rotation >= 360)
+        if (rotation >= 360)
         {
             rotation = 0;
         }
 
+
         KeyAsset1->rotate({0.f, 0.f, rotation});
 
-        // std::cout << "Hitbox camera = " << *camera << '\n'; 
-        std::cout << "Hand Key world = " << CamerasKey->worldTransform; 
-        std::cout << "Cube2 world = " << CubeAsset2->worldTransform ;
-        // std::cout << "Cube1 world = " << CubeAsset->worldTransform ;
+        float deltaX = negative * 5.f * deltaTime;
 
-        // std::cout << "Hitbox \"Cube\" = " << CubeAsset->worldTransform << '\n'; 
+        CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+        // std::cout << CubeAsset3->worldTransform << '\n';
 
+        std::vector<sas::Asset *> collidingObjects;
 
-        root->uppdate(camera.get());
-        root->uppdateWorldTransform({});
+        rootOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
 
-        // FullCubeAsset->localTransform = CubeAsset->localTransform;
-        // FullCubeAsset->worldTransform = CubeAsset->worldTransform;
+        // if (std::find(collidingObjects.begin(), collidingObjects.end(), CubeAsset3.get()) != collidingObjects.end())
+        // {
+        //     std::cout << "Swiched sign\n";
+        //     negative = negative * -1;
+        // }
 
-        std::vector<sas::Asset* > collidingObjects;
+        //TODO: THIS IS STUPID FUCKING HACK I HATE IT
+        if (!collidingObjects.empty())
+        {
+            std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
+            negative = negative * -1;
+            deltaX = negative * 20.f * deltaTime;
 
-        // rootOctree.queryIntersection(*CubeAsset2.get(), collidingObjects);
-        rootOctree.queryIntersection(*CubeAsset2.get(), collidingObjects);
+            CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+        }
 
-        if(showHitBoxes)
+        if (showHitBoxes)
         {
             rootOctree.drawAsset(camera.get());
         }
 
-        if (!collidingObjects.empty())
-        {
-            std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
-        }
+
+        root->uppdateWorldTransform({});
+        root->uppdate(camera.get());
+
 
         window.update();
     }
@@ -338,7 +348,7 @@ void processKeyboardInput(std::shared_ptr<sas::Asset> asset) noexcept
         camera->move(direction * cameraSpeed);
     }
 
-    if(window.isPressed(GLFW_KEY_H))
+    if (window.isPressed(GLFW_KEY_H))
     {
         showHitBoxes = !showHitBoxes;
     }

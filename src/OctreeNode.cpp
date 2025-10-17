@@ -55,11 +55,17 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 
 void sas::OctreeNode::insert(Asset *node) noexcept
 {
-    std::cout << "Inserting\n";
+#ifdef debugMode
+
+    if (!node->getCollisionObject())
+    {
+        std::cerr << "Warning! Inserting in Octree an Asset without any Collision Objects\nNote that"
+                     " only the object that has the collision object should/needs to be inserted";
+    }
+#endif
 
     if (isLeaf())
     {
-        std::cout << "Am leaf\n";
 
         if (count >= maxObjects)
         {
@@ -67,9 +73,6 @@ void sas::OctreeNode::insert(Asset *node) noexcept
         }
         else
         {
-            const auto &nodePosition = node->localTransform.position;
-            std::cout << "Node Position = " << nodePosition.x << ' ' << nodePosition.y << ' ' << nodePosition.z << '\n';
-
             elements[count] = node;
             ++count;
         }
@@ -86,28 +89,21 @@ void sas::OctreeNode::addHitboxAsset(Asset *asset) noexcept
     this->hitbox = asset;
 }
 
-// void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
-// {
-//     for (size_t i = 0; i < count; ++i)
-//     {
-//         const auto &asset = elements[i];
-//         hitbox->localTransform = asset->localTransform;
-//         hitbox->worldTransform = asset->worldTransform;
-//         hitbox->draw(camera);
-//     }
-// }
-
 void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
 {
     for (size_t i = 0; i < count; ++i)
     {
         const auto &asset = elements[i];
 
-        hitbox->worldTransform = asset->worldTransform;
-        hitbox->localTransform = asset->localTransform;
+        hitbox->worldTransform = asset->getCollisionObject()->worldTransform; // asset->worldTransform;
+        // hitbox->localTransform = asset->getCollisionObject()->worldTransform //asset->localTransform;
 
         if (auto p = asset->parent.lock())
         {
+            // Dont like this hack
+            // But drawing the hitboxes
+            // Are for debuging only
+            // So it does not matter
             if (std::dynamic_pointer_cast<Camera>(p))
             {
                 hitbox->drawAttachedToCamera(camera);
@@ -129,7 +125,7 @@ bool sas::OctreeNode::intersectAABB(const glm::vec3 &pos1, const glm::vec3 &size
 // The container could be something other than a std::vector
 void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::Asset *> &results) const noexcept
 {
-
+    // General intersection for this. We don't care about accuracy here
     if (!intersectAABB(position, sizexyz, ast.worldTransform.position, ast.worldTransform.scale))
         return;
 
@@ -139,12 +135,18 @@ void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::
         {
             const auto &asset = elements[i];
 
+            // Skip Self
             if (*asset == ast)
                 continue;
 
-            if (intersectAABB(asset->worldTransform.position, asset->worldTransform.scale, ast.worldTransform.position, ast.worldTransform.scale))
+
+            if (ast.getCollisionObject()->checkCollision(*asset->getCollisionObject()))
             {
+                asset->getCollisionObject()->isColliding = true;
                 results.push_back(asset);
+            }else
+            {
+                asset->getCollisionObject()->isColliding = false;
             }
         }
     }
@@ -153,6 +155,25 @@ void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::
         for (const auto &child : children)
         {
             child.queryIntersection(ast, results);
+        }
+    }
+}
+
+void sas::OctreeNode::queryIntersection(std::vector<sas::Asset *> &results) const noexcept
+{
+
+    if (isLeaf())
+    {
+        for (size_t i = 0; i < count; ++i)
+        {
+           queryIntersection(*elements[i], results);
+        }
+    }
+    else
+    {
+        for (const auto &child : children)
+        {
+            child.queryIntersection(results);
         }
     }
 }
