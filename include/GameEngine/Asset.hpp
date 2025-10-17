@@ -5,6 +5,7 @@
 #include "shader.hpp"
 #include "window.hpp"
 #include "mesh.hpp"
+#include "CollisionObjects.hpp"
 
 // Something that you can draw on the screen
 namespace sas
@@ -13,7 +14,6 @@ namespace sas
     class Asset : public SceneNode
     {
     public:
-        float boundingRadius = 0.1f; // TODO: This is extremmmly temporary
         int uniformShaderID;
 
     private:
@@ -24,6 +24,7 @@ namespace sas
 
         Shader shader;
         std::optional<Mesh> mesh;
+        CollisionObject* collisionObject = nullptr;
         Window *window;
 
     public:
@@ -45,6 +46,14 @@ namespace sas
 
         void uppdate(const Camera *camera) noexcept override;
         void uppdateAttachedToCamera(const Camera *camera) noexcept override;
+        
+        void addCollisionObject(CollisionObject *colObj) noexcept;
+        CollisionObject* getCollisionObject() const noexcept;
+
+        bool operator==(const Asset &other) const
+        {
+            return this == &other;
+        } 
 
         ~Asset() noexcept = default;
     };

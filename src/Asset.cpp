@@ -49,6 +49,14 @@ void sas::Asset::draw(const Camera *camera) noexcept
 
     MVP = ProjectionMatrix * ViewMatrix * worldTransform.getModelMatrix();
     glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
+    // Dont bake if statements in release
+#ifdef debugMode
+    if (!mesh)
+    {
+        std::cerr << "Warning! Drawing without a mesh!\n";
+        return;
+    }
+#endif
 
     mesh->draw(shader);
 }
@@ -56,13 +64,20 @@ void sas::Asset::draw(const Camera *camera) noexcept
 void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
 {
     shader.use();
-    ProjectionMatrix = camera->getProjectionMatrix();
 
-    glm::mat4 modelMatrix = localTransform.getModelMatrix();
-
-    MVP = ProjectionMatrix * modelMatrix;
+    MVP = camera->getProjectionMatrix() * localTransform.getModelMatrix();
 
     glUniformMatrix4fv(uniformShaderID, 1, GL_FALSE, &MVP[0][0]);
+
+    // Dont bake if statements in release
+#ifdef debugMode
+    if (!mesh)
+    {
+        std::cerr << "Warning! Drawing without a mesh!\n";
+        return;
+    }
+#endif
+
     mesh->draw(shader);
 }
 
@@ -71,6 +86,24 @@ void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
     drawAttachedToCamera(camera);
 
     SceneNode::uppdateAttachedToCamera(camera);
+}
+
+void sas::Asset::addCollisionObject(CollisionObject *colObj) noexcept
+{
+    collisionObject = colObj;
+}
+
+sas::CollisionObject* sas::Asset::getCollisionObject() const noexcept
+{
+#ifdef debugMode
+
+    if (!collisionObject)
+    {
+        std::cerr << "Warning! Calling getCollisionObject without an collision object\n";
+        return {};
+    }
+#endif
+    return collisionObject;
 }
 
 void sas::Asset::uppdate(const Camera *camera) noexcept

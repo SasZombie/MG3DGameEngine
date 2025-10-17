@@ -56,3 +56,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 add_executable(main ${SOURCESNODES})
 
 target_link_libraries(main PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
+
+if(CMAKE_BUILD_TYPE STREQUAL "debug")
+    target_compile_definitions(main PRIVATE debugMode=1)
+else()
+    target_compile_definitions(main PRIVATE debugMode=0)
+endif()

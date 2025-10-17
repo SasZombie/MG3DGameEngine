@@ -8,27 +8,34 @@
 
 #pragma GCC diagnostic pop
 
-#include "OctreeNode.hpp"
-
 namespace sas
 {
+    struct CollisionObject
+    {
+        virtual void checkCollision() = 0;
+    };
 
-    // Here we are supposed to ovverwrite the queryIntersection function
-    // That is marked virtual, but I think it is enought with just AABB
-    // This is why I am not overrwriting anything here
-    // The OctreeNode should be an interface but due to above, I am not
-    // Marking the queryIntersection function as pure virtual
-
-    struct Sphere : public OctreeNode
+    // TOOD: Maybe implement Shhere as well
+    struct Sphere : CollisionObject
     {
         glm::vec3 center;
         float radius;
+
+        void checkCollision() override
+        {
+            assert(false && "TODO: Sphere Collision");
+        }
     };
 
-    struct AABB : public OctreeNode
+    struct AABB : CollisionObject
     {
         glm::vec3 min;
         glm::vec3 max;
+
+        void checkCollision() override
+        {
+            assert(false && "TODO: Collision AABB");
+        }
     };
 
 } // namespace sas

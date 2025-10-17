@@ -17,6 +17,7 @@
 #pragma GCC diagnostic pop
 
 #include "Asset.hpp"
+#include "OctreeNode.hpp"
 #include "CollisionObjects.hpp"
 #include "meshLoaderObj.hpp"
 #include "texture.hpp"
@@ -168,7 +169,6 @@ int main(int argc, char **argv)
 
     root->addNode(KeyAsset1);
 
-    //TODO: FIX THIS SHIT
     // CamerasKey->scale({0.5f, 0.5f, 0.5f});
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
     // CamerasKey->rotate({0.f, 0.f, 190.f});
@@ -185,12 +185,12 @@ int main(int argc, char **argv)
     // rootOctree.insert(*CubeAsset.get());
     // rootOctree.insert(KeyAsset.get());
     // rootOctree.insert(CubeAsset.get());
-    // rootOctree.insert(CubeAsset2.get());
     // rootOctree.insert(KeyAsset1.get());
-    // rootOctree.insert(CamerasKey.get());
+    rootOctree.insert(CubeAsset2.get());
+    rootOctree.insert(CamerasKey.get());
     // rootOctree.insert(KeyAsset2.get());
 
-    // rootOctree.addHitboxAsset(FullCubeAsset.get());
+    rootOctree.addHitboxAsset(FullCubeAsset.get());
 
     float rotation = 0;
 
@@ -227,10 +227,10 @@ int main(int argc, char **argv)
 
         KeyAsset1->rotate({0.f, 0.f, rotation});
 
-        std::cout << "Hitbox camera = " << *camera << '\n'; 
+        // std::cout << "Hitbox camera = " << *camera << '\n'; 
         std::cout << "Hand Key world = " << CamerasKey->worldTransform; 
-        std::cout << "Cube1 world = " << CubeAsset->worldTransform ;
         std::cout << "Cube2 world = " << CubeAsset2->worldTransform ;
+        // std::cout << "Cube1 world = " << CubeAsset->worldTransform ;
 
         // std::cout << "Hitbox \"Cube\" = " << CubeAsset->worldTransform << '\n'; 
 
@@ -241,20 +241,20 @@ int main(int argc, char **argv)
         // FullCubeAsset->localTransform = CubeAsset->localTransform;
         // FullCubeAsset->worldTransform = CubeAsset->worldTransform;
 
-        // std::vector<sas::Asset* > collidingObjects;
+        std::vector<sas::Asset* > collidingObjects;
 
-        // rootOctree.queryIntersection(*CubeAsset.get(), collidingObjects);
-        
+        // rootOctree.queryIntersection(*CubeAsset2.get(), collidingObjects);
+        rootOctree.queryIntersection(*CubeAsset2.get(), collidingObjects);
 
-        // if(showHitBoxes)
-        // {
-        //     rootOctree.drawAsset(camera.get());
-        // }
+        if(showHitBoxes)
+        {
+            rootOctree.drawAsset(camera.get());
+        }
 
-        // if (!collidingObjects.empty())
-        // {
-        //     std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
-        // }
+        if (!collidingObjects.empty())
+        {
+            std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
+        }
 
         window.update();
     }

@@ -9,7 +9,7 @@ bool sas::OctreeNode::isLeaf() const noexcept
 {
     return children.empty();
 }
-void sas::OctreeNode::subdivide(Asset* node) noexcept
+void sas::OctreeNode::subdivide(Asset *node) noexcept
 {
     count = 0;
     float hw = sizexyz.x / 2;
@@ -67,7 +67,7 @@ void sas::OctreeNode::insert(Asset *node) noexcept
         }
         else
         {
-            const auto& nodePosition = node->localTransform.position;
+            const auto &nodePosition = node->localTransform.position;
             std::cout << "Node Position = " << nodePosition.x << ' ' << nodePosition.y << ' ' << nodePosition.z << '\n';
 
             elements[count] = node;
@@ -103,8 +103,8 @@ void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
     {
         const auto &asset = elements[i];
 
-        hitbox->localTransform = asset->localTransform;
         hitbox->worldTransform = asset->worldTransform;
+        hitbox->localTransform = asset->localTransform;
 
         if (auto p = asset->parent.lock())
         {
@@ -127,7 +127,7 @@ bool sas::OctreeNode::intersectAABB(const glm::vec3 &pos1, const glm::vec3 &size
 }
 
 // The container could be something other than a std::vector
-void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::Asset* > &results) const noexcept
+void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::Asset *> &results) const noexcept
 {
 
     if (!intersectAABB(position, sizexyz, ast.worldTransform.position, ast.worldTransform.scale))
@@ -138,11 +138,10 @@ void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::
         for (size_t i = 0; i < count; ++i)
         {
             const auto &asset = elements[i];
-            // TODO: Skip Self
-            //  if(asset == elements[i])
-            //      continue;
 
-            std::cout << "Comparing Intersection from " << asset->worldTransform << " \nWith " << ast.worldTransform << '\n'; 
+            if (*asset == ast)
+                continue;
+
             if (intersectAABB(asset->worldTransform.position, asset->worldTransform.scale, ast.worldTransform.position, ast.worldTransform.scale))
             {
                 results.push_back(asset);

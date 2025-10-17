@@ -41,7 +41,7 @@ namespace sas
 
             result.scale = parent.scale * scale;
             result.rotation = parent.rotation + rotation;
-            result.position = parent.position + (parent.scale * position);
+            result.position = parent.position + position;
 
             return result;
         }
