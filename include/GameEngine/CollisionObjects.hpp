@@ -38,7 +38,7 @@ namespace sas
         virtual bool checkCollision(const CollisionObject &other) = 0;
         virtual void uppdateBounds(const Transform &newWorldTransform) = 0;
 
-        virtual ~CollisionObject() = default;
+        virtual ~CollisionObject() noexcept = default;
     };
 
     // TOOD: Maybe implement Shhere as well
@@ -91,7 +91,7 @@ namespace sas
             max = worldTransform.position + worldTransform.scale * 0.5f;
         }
 
-        ~AABB() = default;
+        ~AABB() noexcept = default;
     };
 
 } // namespace sas

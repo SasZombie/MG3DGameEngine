@@ -1,4 +1,5 @@
 #include "SceneNode.hpp"
+#include "Globals.hpp"
 
 sas::SceneNode::SceneNode(const glm::vec3 &position) noexcept
 {
@@ -27,6 +28,9 @@ void sas::SceneNode::uppdateWorldTransformCamera(const Transform &parentWorldTra
 
 void sas::SceneNode::uppdate(const Camera *camera) noexcept
 {
+
+    velocity += acceleration * Globals::instance().getDeltaTime();
+    localTransform.position += velocity * Globals::instance().getDeltaTime();
     for (auto &component : components)
     {
         component->uppdate(camera);

@@ -14,9 +14,12 @@ namespace sas
         using SceneSharedNode = std::shared_ptr<SceneNode>; 
         
         std::weak_ptr<SceneNode> parent;
+        glm::vec3 velocity{0.f};
+        glm::vec3 acceleration{0.f};
         Transform localTransform;
         Transform worldTransform;
         std::vector<SceneSharedNode> components;
+
         
         //Used only by a root node
         SceneNode() noexcept = default;

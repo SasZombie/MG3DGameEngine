@@ -20,6 +20,7 @@
 #include "OctreeNode.hpp"
 #include "CollisionObjects.hpp"
 #include "meshLoaderObj.hpp"
+#include "Globals.hpp"
 #include "texture.hpp"
 // #include "shader.hpp"
 // #include "window.hpp"
@@ -196,12 +197,17 @@ int main(int argc, char **argv)
     root->uppdate(camera.get());
 
 
+    CubeAsset3->velocity = {5.f, 0.f, 0.f};
+
 
     while (!glfwWindowShouldClose(window.getWindow()))
     {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
+        sas::Globals::instance().setDeltaTime(deltaTime);
+
         processKeyboardInput(CubeAsset);
 
         glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -233,18 +239,10 @@ int main(int argc, char **argv)
 
         float deltaX = negative * 5.f * deltaTime;
 
-        CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-        // std::cout << CubeAsset3->worldTransform << '\n';
-
+        // CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
         std::vector<sas::Asset *> collidingObjects;
 
         rootOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
-
-        // if (std::find(collidingObjects.begin(), collidingObjects.end(), CubeAsset3.get()) != collidingObjects.end())
-        // {
-        //     std::cout << "Swiched sign\n";
-        //     negative = negative * -1;
-        // }
 
         //TODO: THIS IS STUPID FUCKING HACK I HATE IT
         if (!collidingObjects.empty())
@@ -252,6 +250,8 @@ int main(int argc, char **argv)
             std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
             negative = negative * -1;
             deltaX = negative * 20.f * deltaTime;
+
+            CubeAsset3->velocity = {negative * 5.f, 0.f, 0.f};
 
             CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
         }
@@ -261,9 +261,8 @@ int main(int argc, char **argv)
             rootOctree.drawAsset(camera.get());
         }
 
-
-        root->uppdateWorldTransform({});
         root->uppdate(camera.get());
+        root->uppdateWorldTransform({});
 
 
         window.update();
@@ -357,8 +356,8 @@ void processKeyboardInput(std::shared_ptr<sas::Asset> asset) noexcept
         asset->localTransform.position += glm::vec3{0.1f, 0, 0};
     }
 
-    static constexpr float zMin = -490.f, zMax = 490.f, xMin = -490.f, xMax = 490.f;
-    static constexpr float szMin = -334.f;
+    // static constexpr float zMin = -490.f, zMax = 490.f, xMin = -490.f, xMax = 490.f;
+    // static constexpr float szMin = -334.f;
 
     // if (!openGate)
     // {
