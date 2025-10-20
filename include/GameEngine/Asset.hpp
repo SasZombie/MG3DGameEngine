@@ -51,7 +51,7 @@ namespace sas
         void addCollisionObject(CollisionObject *colObj) noexcept;
         CollisionObject* getCollisionObject() const noexcept;
 
-        bool operator==(const Asset &other) const
+        bool operator==(const Asset &other) const noexcept
         {
             return this == &other;
         } 

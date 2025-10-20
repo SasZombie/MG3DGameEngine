@@ -182,6 +182,11 @@ int main(int argc, char **argv)
     CubeAsset2->addCollisionObject(Cube2CollisonObject);
     CubeAsset3->addCollisionObject(Cube3CollisonObject);
 
+    CubeAsset3->setCollisionCallback()
+    {
+
+    }
+
     rootOctree.insert(CubeAsset.get());
     rootOctree.insert(CubeAsset2.get());
     rootOctree.insert(CubeAsset3.get());
@@ -189,15 +194,11 @@ int main(int argc, char **argv)
     rootOctree.addHitboxAsset(FullCubeAsset.get());
 
     float rotation = 0;
-    float positionX = CubeAsset3->localTransform.position.x;
     int negative = 1;
 
     //Initial Set-up
     root->uppdateWorldTransform({});
     root->uppdate(camera.get());
-
-
-    CubeAsset3->velocity = {5.f, 0.f, 0.f};
 
 
     while (!glfwWindowShouldClose(window.getWindow()))
@@ -239,21 +240,27 @@ int main(int argc, char **argv)
 
         float deltaX = negative * 5.f * deltaTime;
 
-        // CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+        CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
         std::vector<sas::Asset *> collidingObjects;
 
         rootOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
 
-        //TODO: THIS IS STUPID FUCKING HACK I HATE IT
         if (!collidingObjects.empty())
         {
-            std::cout << "Camera is colliding with " << collidingObjects.size() << " objects!\n";
-            negative = negative * -1;
-            deltaX = negative * 20.f * deltaTime;
+            std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
 
-            CubeAsset3->velocity = {negative * 5.f, 0.f, 0.f};
+            CubeAsset3->triggerCollision(collidingObjects);
 
-            CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+            // negative = negative * -1;
+            //THIS IS A STUPID HACK I HATE IT
+            //However, to propperly implement this
+            //I would need to implement a proper
+            //Collision detection where on collision
+            //The objects move further apart aka collide
+            //And it is outside of this project's scope
+            // deltaX = negative * 20.f * deltaTime;
+            
+            // CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
         }
 
         if (showHitBoxes)
@@ -261,8 +268,8 @@ int main(int argc, char **argv)
             rootOctree.drawAsset(camera.get());
         }
 
-        root->uppdate(camera.get());
         root->uppdateWorldTransform({});
+        root->uppdate(camera.get());
 
 
         window.update();

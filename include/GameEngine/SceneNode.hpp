@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "Transform.hpp"
+#include "Signal.hpp"
 
 struct Camera;
 
@@ -19,6 +20,7 @@ namespace sas
         Transform localTransform;
         Transform worldTransform;
         std::vector<SceneSharedNode> components;
+        Signal<SceneNode*, const std::vector<SceneNode*>&> onCollision;
 
         
         //Used only by a root node
@@ -32,6 +34,8 @@ namespace sas
 
         virtual void uppdate(const Camera* camera) noexcept;
         virtual void uppdateAttachedToCamera(const Camera* camera) noexcept;
+
+        virtual void triggerCollision(const std::vector<SceneNode*>& others) noexcept;
 
         void uppdateWorldTransform(const Transform& parentWorldTransform) noexcept;
         void uppdateWorldTransformCamera(const Transform& parentWorldTransform) noexcept;

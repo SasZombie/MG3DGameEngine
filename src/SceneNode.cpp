@@ -45,6 +45,12 @@ void sas::SceneNode::uppdateAttachedToCamera(const Camera *camera) noexcept
     }
 }
 
+
+void sas::SceneNode::triggerCollision(const std::vector<SceneNode *> &others) noexcept
+{
+    onCollision.emit(this, others);
+}
+
 void sas::SceneNode::uppdateWorldTransform(const Transform &parentWorldTransform) noexcept
 {
     worldTransform = parentWorldTransform.combine(localTransform);

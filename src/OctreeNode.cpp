@@ -139,7 +139,6 @@ void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::
             if (*asset == ast)
                 continue;
 
-
             if (ast.getCollisionObject()->checkCollision(*asset->getCollisionObject()))
             {
                 asset->getCollisionObject()->isColliding = true;

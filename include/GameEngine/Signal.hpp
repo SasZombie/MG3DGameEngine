@@ -20,14 +20,14 @@ namespace sas
 
         void clear() noexcept
         {
-            callBack.clear();
+            callBacks.clear();
         }
 
         void emit(Args... args)
         {
             for(auto& s : callBacks)
             {
-                s(args);
+                s(args...);
             }
         }
 
@@ -35,4 +35,5 @@ namespace sas
         std::vector<callBack> callBacks;
     };
 
+    
 } // namespace sas
