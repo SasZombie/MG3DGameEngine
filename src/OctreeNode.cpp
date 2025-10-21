@@ -9,9 +9,9 @@ bool sas::OctreeNode::isLeaf() const noexcept
 {
     return children.empty();
 }
+
 void sas::OctreeNode::subdivide(Asset *node) noexcept
 {
-    count = 0;
     float hw = sizexyz.x / 2;
     float hh = sizexyz.y / 2;
     float hd = sizexyz.z / 2;
@@ -25,17 +25,20 @@ void sas::OctreeNode::subdivide(Asset *node) noexcept
     children.emplace_back(glm::vec3{-hw / 2, hh / 2, hd / 2}, glm::vec3{hw, hh, hd});
     children.emplace_back(glm::vec3{hw / 2, hh / 2, hd / 2}, glm::vec3{hw, hh, hd});
 
-    size_t octant;
+    size_t octant = 0;
     // We know that we have maxObjects
     // Otherwise we wouldn't be here
     for (size_t i = 0; i < maxObjects; ++i)
     {
         octant = getOctan(*elements[i]);
+        std::cout << octant << '\n';
         children[octant].insert(elements[i]);
     }
 
     octant = getOctan(*node);
     children[octant].insert(node);
+    count = 0;
+
 }
 
 size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
@@ -52,6 +55,7 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 
     return octan;
 }
+
 
 void sas::OctreeNode::insert(Asset *node) noexcept
 {
@@ -179,10 +183,7 @@ void sas::OctreeNode::queryIntersection(std::vector<sas::Asset *> &results) cons
     }
 }
 
-static bool pointInPOV(const glm::vec3 &camPos,
-                       const glm::vec3 &camForward,
-                       const glm::vec3 &camUp,
-                       const glm::vec3 &camRight,
+static bool pointInPOV(const glm::vec3 &camPos, const glm::vec3 &camForward, const glm::vec3 &camUp, const glm::vec3 &camRight,
                        float fovY, float aspect, float viewRange,
                        const glm::vec3 &point)
 {
@@ -190,10 +191,10 @@ static bool pointInPOV(const glm::vec3 &camPos,
     float dist2 = glm::dot(toPoint, toPoint);
     if (dist2 > viewRange * viewRange)
         return false;
-    
+
     glm::vec3 dir = glm::normalize(toPoint);
 
-    // Project onto camera basis
+    // This projects into the camera
     float forwardDot = glm::dot(dir, camForward);
     float rightDot = glm::dot(dir, camRight);
     float upDot = glm::dot(dir, camUp);
@@ -232,7 +233,7 @@ bool sas::OctreeNode::intersectsView(const Camera *cam,
                        fovY, aspect, viewRange, c))
             return true;
 
-    // Optional: camera inside cube
+    // If inside cube
     if (camPos.x >= nodeMin.x && camPos.x <= nodeMax.x &&
         camPos.y >= nodeMin.y && camPos.y <= nodeMax.y &&
         camPos.z >= nodeMin.z && camPos.z <= nodeMax.z)
@@ -246,7 +247,7 @@ void sas::OctreeNode::querryView(const Camera *cam,
                                  std::vector<Asset *> &visible) const noexcept
 {
     if (!intersectsView(cam, fovY, aspect, viewRange, this->position, this->sizexyz))
-        return; 
+        return;
 
     std::cout << "SUNT IN CUUUB\n";
     if (isLeaf())

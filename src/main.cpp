@@ -42,7 +42,8 @@ constexpr size_t winWidth = 1920, winHeight = 1080;
 
 Window window("Game Engine", winWidth, winHeight);
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
-sas::OctreeNode rootOctree({0, 0, 0}, {100, 100, 100});
+sas::OctreeNode collisionOctree({0, 0, 0}, {100, 100, 100});
+sas::OctreeNode cullingOctree({0, 0, 0}, {100, 100, 100});
 
 bool showHitBoxes = true;
 
@@ -184,24 +185,28 @@ int main(int argc, char **argv)
     CubeAsset2->addCollisionObject(Cube2CollisonObject);
     CubeAsset3->addCollisionObject(Cube3CollisonObject);
 
-    rootOctree.insert(CubeAsset.get());
-    rootOctree.insert(CubeAsset2.get());
-    rootOctree.insert(CubeAsset3.get());
+    collisionOctree.insert(CubeAsset.get());
+    collisionOctree.insert(CubeAsset2.get());
+    collisionOctree.insert(CubeAsset3.get());
 
-    rootOctree.addHitboxAsset(FullCubeAsset.get());
+    collisionOctree.addHitboxAsset(FullCubeAsset.get());
 
     float rotation = 0;
     int negative = 1;
 
     //Initial Set-up
-    root->uppdate(camera.get());
     root->uppdateWorldTransform({});
+    root->uppdate(camera.get());
 
     float viewRange = 1000.f;
     float fovRadians = glm::radians(360.f);
 
     float aspect = static_cast<float>(winWidth) / static_cast<float>(winHeight);
 
+    cullingOctree.insert(CubeAsset.get());
+    cullingOctree.insert(CubeAsset2.get());
+    cullingOctree.insert(CubeAsset3.get());
+    cullingOctree.insert(KeyAsset1.get());
 
     while (!glfwWindowShouldClose(window.getWindow()))
     {
@@ -239,14 +244,13 @@ int main(int argc, char **argv)
         
         KeyAsset1->rotate({0.f, 0.f, rotation});
 
-        // std::cout << KeyAsset1->localTransform << '\n';
 
         float deltaX = negative * 5.f * deltaTime;
 
         CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
         std::vector<sas::Asset *> collidingObjects;
 
-        rootOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
+        collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
 
         if (!collidingObjects.empty())
         {
@@ -266,11 +270,11 @@ int main(int argc, char **argv)
 
         if (showHitBoxes)
         {
-            rootOctree.drawAsset(camera.get());
+            collisionOctree.drawAsset(camera.get());
         }
 
         std::vector<sas::Asset*> visible;
-        rootOctree.querryView(camera.get(), 90.f, aspect, viewRange, visible);
+        cullingOctree.querryView(camera.get(), 90.f, aspect, viewRange, visible);
 
         std::cout << *camera << '\n';
         std::cout << "There are " << visible.size() << '\n';

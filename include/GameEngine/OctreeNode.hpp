@@ -42,13 +42,17 @@ namespace sas
         OctreeNode(const glm::vec3 &pos, const glm::vec3 &size) noexcept;
 
         bool isLeaf() const noexcept;
-        void subdivide(Asset *node) noexcept;
         size_t getOctan(const Asset &node) const noexcept;
 
+        // TODO: This function potentially runs for ever
+        //  This is because there is no limit on how small
+        //  A cube can be, meaning that if I insert over 5
+        //  Elements that occupy the same place in space
+        //  The tree will try to subdivide infinitly
+        void subdivide(Asset *node) noexcept;
+        
         void insert(Asset *node) noexcept;
-
         void addHitboxAsset(Asset *asset) noexcept;
-
         void drawAsset(const Camera *camera) noexcept;
 
         bool intersectAABB(const glm::vec3 &pos1, const glm::vec3 &size1,
@@ -65,4 +69,5 @@ namespace sas
         virtual void queryIntersection(std::vector<Asset *> &results) const noexcept;
         virtual ~OctreeNode() = default;
     };
+
 } // namespace sas
