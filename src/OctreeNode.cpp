@@ -59,8 +59,9 @@ void sas::OctreeNode::insert(Asset *node) noexcept
 
     if (!node->getCollisionObject())
     {
-        std::cerr << "Warning! Inserting in Octree an Asset without any Collision Objects\nNote that"
-                     " only the object that has the collision object should/needs to be inserted";
+        std::cerr << "Warning! Object inserted without any Collision Object(s)  \nNote that"
+                     " only the object that has the collision object should/needs to be inserted\n"
+                     "If you plan on adding it later, you can safely ignore this warning";
     }
 #endif
 
@@ -95,7 +96,7 @@ void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
     {
         const auto &asset = elements[i];
 
-        hitbox->worldTransform = asset->getCollisionObject()->worldTransform; // asset->worldTransform;
+        hitbox->worldTransform = asset->getCollisionObject()->worldTransform;
         // hitbox->localTransform = asset->getCollisionObject()->worldTransform //asset->localTransform;
 
         if (auto p = asset->parent.lock())
@@ -143,7 +144,8 @@ void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::
             {
                 asset->getCollisionObject()->isColliding = true;
                 results.push_back(asset);
-            }else
+            }
+            else
             {
                 asset->getCollisionObject()->isColliding = false;
             }
@@ -165,7 +167,7 @@ void sas::OctreeNode::queryIntersection(std::vector<sas::Asset *> &results) cons
     {
         for (size_t i = 0; i < count; ++i)
         {
-           queryIntersection(*elements[i], results);
+            queryIntersection(*elements[i], results);
         }
     }
     else
@@ -174,5 +176,101 @@ void sas::OctreeNode::queryIntersection(std::vector<sas::Asset *> &results) cons
         {
             child.queryIntersection(results);
         }
+    }
+}
+
+static bool pointInPOV(const glm::vec3 &camPos,
+                       const glm::vec3 &camForward,
+                       const glm::vec3 &camUp,
+                       const glm::vec3 &camRight,
+                       float fovY, float aspect, float viewRange,
+                       const glm::vec3 &point)
+{
+    glm::vec3 toPoint = point - camPos;
+    float dist2 = glm::dot(toPoint, toPoint);
+    if (dist2 > viewRange * viewRange)
+        return false;
+    
+    glm::vec3 dir = glm::normalize(toPoint);
+
+    // Project onto camera basis
+    float forwardDot = glm::dot(dir, camForward);
+    float rightDot = glm::dot(dir, camRight);
+    float upDot = glm::dot(dir, camUp);
+
+    float halfVFOV = fovY * 0.5f;
+    float halfHFOV = atan(tan(halfVFOV) * aspect);
+
+    // Angular checks
+    float horizAngle = atan2(rightDot, forwardDot);
+    float vertAngle = atan2(upDot, forwardDot);
+
+    return fabs(horizAngle) <= halfHFOV && fabs(vertAngle) <= halfVFOV;
+}
+
+bool sas::OctreeNode::intersectsView(const Camera *cam,
+                                     float fovY,
+                                     float aspect,
+                                     float viewRange,
+                                     const glm::vec3 &nodeMin,
+                                     const glm::vec3 &nodeMax) const noexcept
+{
+    glm::vec3 camPos = cam->worldTransform.position;
+
+    std::array<glm::vec3, 8> corners = {
+        glm::vec3(nodeMin.x, nodeMin.y, nodeMin.z),
+        glm::vec3(nodeMax.x, nodeMin.y, nodeMin.z),
+        glm::vec3(nodeMin.x, nodeMax.y, nodeMin.z),
+        glm::vec3(nodeMax.x, nodeMax.y, nodeMin.z),
+        glm::vec3(nodeMin.x, nodeMin.y, nodeMax.z),
+        glm::vec3(nodeMax.x, nodeMin.y, nodeMax.z),
+        glm::vec3(nodeMin.x, nodeMax.y, nodeMax.z),
+        glm::vec3(nodeMax.x, nodeMax.y, nodeMax.z)};
+
+    for (const auto &c : corners)
+        if (pointInPOV(camPos, cam->getCameraViewDirection(), cam->getCameraUp(), cam->getCameraRight(),
+                       fovY, aspect, viewRange, c))
+            return true;
+
+    // Optional: camera inside cube
+    if (camPos.x >= nodeMin.x && camPos.x <= nodeMax.x &&
+        camPos.y >= nodeMin.y && camPos.y <= nodeMax.y &&
+        camPos.z >= nodeMin.z && camPos.z <= nodeMax.z)
+        return true;
+
+    return false;
+}
+
+void sas::OctreeNode::querryView(const Camera *cam,
+                                 float fovY, float aspect, float viewRange,
+                                 std::vector<Asset *> &visible) const noexcept
+{
+    if (!intersectsView(cam, fovY, aspect, viewRange, this->position, this->sizexyz))
+        return; 
+
+    std::cout << "SUNT IN CUUUB\n";
+    if (isLeaf())
+    {
+        for (size_t i = 0; i < count; ++i)
+        {
+            Asset *a = elements[i];
+            if (!a)
+                continue;
+
+            glm::vec3 pos = a->worldTransform.position;
+            if (pointInPOV(cam->worldTransform.position,
+                           cam->getCameraViewDirection(),
+                           cam->getCameraUp(),
+                           cam->getCameraRight(),
+                           fovY, aspect, viewRange, pos))
+            {
+                visible.push_back(a);
+            }
+        }
+    }
+    else
+    {
+        for (const auto &child : children)
+            child.querryView(cam, fovY, aspect, viewRange, visible);
     }
 }

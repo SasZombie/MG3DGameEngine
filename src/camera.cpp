@@ -143,6 +143,9 @@ glm::vec3 Camera::getCameraUp() const noexcept
 
 std::ostream &operator<<(std::ostream &os, const Camera &obj)
 {
-    os << "Camera Position(x = " << obj.localTransform.position.x << ", y = " << obj.localTransform.position.y << ", z = " << obj.localTransform.position.z << ")";
+    os << "Camera Position(x = " << obj.localTransform.position.x << ", y = " << obj.localTransform.position.y << ", z = " << obj.localTransform.position.z << ")"
+        << "Camera Up(x = " << obj.cameraUp.x << ", y = " << obj.cameraUp.y << ", z = " << obj.cameraUp.z << '\n'
+        << "Camera Right(x = " << obj.cameraRight.x << ", y = " << obj.cameraRight.y << ", z = " << obj.cameraRight.z << '\n'
+        << "Camera View Direction " <<  obj.cameraViewDirection.x << ", y = " << obj.cameraViewDirection.y << ", z = " << obj.cameraViewDirection.z << '\n';
     return os;
 }

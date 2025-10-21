@@ -38,7 +38,9 @@ double lastX = 400, lastY = 300;
 
 glm::vec3 keyPosition(322.f, -20.f, 404.f);
 
-Window window("Game Engine", 1920, 1080);
+constexpr size_t winWidth = 1920, winHeight = 1080;
+
+Window window("Game Engine", winWidth, winHeight);
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
 sas::OctreeNode rootOctree({0, 0, 0}, {100, 100, 100});
 
@@ -182,11 +184,6 @@ int main(int argc, char **argv)
     CubeAsset2->addCollisionObject(Cube2CollisonObject);
     CubeAsset3->addCollisionObject(Cube3CollisonObject);
 
-    CubeAsset3->setCollisionCallback()
-    {
-
-    }
-
     rootOctree.insert(CubeAsset.get());
     rootOctree.insert(CubeAsset2.get());
     rootOctree.insert(CubeAsset3.get());
@@ -197,8 +194,13 @@ int main(int argc, char **argv)
     int negative = 1;
 
     //Initial Set-up
-    root->uppdateWorldTransform({});
     root->uppdate(camera.get());
+    root->uppdateWorldTransform({});
+
+    float viewRange = 1000.f;
+    float fovRadians = glm::radians(360.f);
+
+    float aspect = static_cast<float>(winWidth) / static_cast<float>(winHeight);
 
 
     while (!glfwWindowShouldClose(window.getWindow()))
@@ -228,15 +230,16 @@ int main(int argc, char **argv)
         // glDepthMask(GL_TRUE);
         // glDepthFunc(GL_LESS);
 
-        rotation = rotation + 5 * deltaTime;
+        rotation = rotation + 5.f * deltaTime;
 
-        if (rotation >= 360)
+        if (rotation >= M_PI * 2)
         {
             rotation = 0;
         }
-
-
+        
         KeyAsset1->rotate({0.f, 0.f, rotation});
+
+        // std::cout << KeyAsset1->localTransform << '\n';
 
         float deltaX = negative * 5.f * deltaTime;
 
@@ -249,24 +252,29 @@ int main(int argc, char **argv)
         {
             std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
 
-            CubeAsset3->triggerCollision(collidingObjects);
-
-            // negative = negative * -1;
+            negative = negative * -1;
             //THIS IS A STUPID HACK I HATE IT
             //However, to propperly implement this
             //I would need to implement a proper
             //Collision detection where on collision
             //The objects move further apart aka collide
             //And it is outside of this project's scope
-            // deltaX = negative * 20.f * deltaTime;
+            deltaX = negative * 20.f * deltaTime;
             
-            // CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+            CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
         }
 
         if (showHitBoxes)
         {
             rootOctree.drawAsset(camera.get());
         }
+
+        std::vector<sas::Asset*> visible;
+        rootOctree.querryView(camera.get(), 90.f, aspect, viewRange, visible);
+
+        std::cout << *camera << '\n';
+        std::cout << "There are " << visible.size() << '\n';
+
 
         root->uppdateWorldTransform({});
         root->uppdate(camera.get());
