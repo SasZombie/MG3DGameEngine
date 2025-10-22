@@ -8,11 +8,13 @@
 struct Camera;
 
 namespace sas
-{
+{    
+    struct SceneNode;
+    using SceneSharedNode = std::shared_ptr<SceneNode>; 
+    
     struct SceneNode : public std::enable_shared_from_this<SceneNode>
     {
 
-        using SceneSharedNode = std::shared_ptr<SceneNode>; 
         
         std::weak_ptr<SceneNode> parent;
         glm::vec3 velocity{0.f};
@@ -42,6 +44,8 @@ namespace sas
 
         virtual ~SceneNode() = default;
     };   
+
+
 } // namespace sas
     
     /*

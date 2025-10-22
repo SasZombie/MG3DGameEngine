@@ -22,12 +22,13 @@
 #include "meshLoaderObj.hpp"
 #include "Globals.hpp"
 #include "texture.hpp"
+#include "GameEngine.hpp"
 // #include "shader.hpp"
 // #include "window.hpp"
 
 static void mouse_callback(GLFWwindow *window, double xpos, double ypos) noexcept;
 static void mouse_callback(GLFWwindow *window, int button, int action, int mods) noexcept;
-static void processKeyboardInput(std::shared_ptr<sas::Asset> asset) noexcept;
+static void processKeyboardInput() noexcept;
 
 float yOffset = 0.f;
 
@@ -40,16 +41,20 @@ glm::vec3 keyPosition(322.f, -20.f, 404.f);
 
 constexpr size_t winWidth = 1920, winHeight = 1080;
 
-Window window("Game Engine", winWidth, winHeight);
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
 sas::OctreeNode collisionOctree({0, 0, 0}, {100, 100, 100});
 sas::OctreeNode cullingOctree({0, 0, 0}, {100, 100, 100});
 
 bool showHitBoxes = true;
 
+Window *window;
 int main(int argc, char **argv)
 {
-    std::shared_ptr<sas::SceneNode> root = std::make_shared<sas::SceneNode>();
+    sas::GameEngine ge;
+    window = ge.getWindow();
+
+    std::shared_ptr<sas::SceneNode> root = ge.getRoot();
+
     float lastFrame = 0.f;
 
     Shader shader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
@@ -69,31 +74,19 @@ int main(int argc, char **argv)
 
     Mesh fullCube = loadObj("Resources/Models/cube.obj");
 
-    std::shared_ptr<sas::Asset> FullCubeAsset = std::make_shared<sas::Asset>(shader, fullCube, &window);
+    std::shared_ptr<sas::Asset> FullCubeAsset = std::make_shared<sas::Asset>(shader, fullCube, window);
 
-    std::shared_ptr<sas::Asset> SunAsset = std::make_shared<sas::Asset>(sunShader, sun, &window);
-    std::shared_ptr<sas::Asset> SphereAsset = std::make_shared<sas::Asset>(shader, HitBox, &window);
-    std::shared_ptr<sas::Asset> SkyBoxAsset = std::make_shared<sas::Asset>(shader, skyBox, &window);
-    std::shared_ptr<sas::Asset> CubeAsset = std::make_shared<sas::Asset>(shader, cube, &window);
-    std::shared_ptr<sas::Asset> CubeAsset2 = std::make_shared<sas::Asset>(shader, cube, &window);
-    std::shared_ptr<sas::Asset> CubeAsset3 = std::make_shared<sas::Asset>(shader, cube, &window);
-    std::shared_ptr<sas::Asset> CamerasKey = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset1 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset2 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset3 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset4 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset5 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset6 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset11 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset22 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset33 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset44 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset55 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsset66 = std::make_shared<sas::Asset>(shader, key, &window);
-    std::shared_ptr<sas::Asset> KeyAsseyTEST = std::make_shared<sas::Asset>(shader, key, &window);
+    std::shared_ptr<sas::Asset> SunAsset = std::make_shared<sas::Asset>(sunShader, sun, window);
+    std::shared_ptr<sas::Asset> SphereAsset = std::make_shared<sas::Asset>(shader, HitBox, window);
+    std::shared_ptr<sas::Asset> SkyBoxAsset = std::make_shared<sas::Asset>(shader, skyBox, window);
+    std::shared_ptr<sas::Asset> CubeAsset = std::make_shared<sas::Asset>(shader, cube, window);
+    std::shared_ptr<sas::Asset> CubeAsset2 = std::make_shared<sas::Asset>(shader, cube, window);
+    std::shared_ptr<sas::Asset> CubeAsset3 = std::make_shared<sas::Asset>(shader, cube, window);
+    std::shared_ptr<sas::Asset> CamerasKey = std::make_shared<sas::Asset>(shader, key, window);
+    std::shared_ptr<sas::Asset> KeyAsset1 = std::make_shared<sas::Asset>(shader, key, window);
 
-    glfwSetCursorPosCallback(window.getWindow(), mouse_callback);
-    glfwSetMouseButtonCallback(window.getWindow(), mouse_callback);
+    glfwSetCursorPosCallback(window->getWindow(), mouse_callback);
+    glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
 
     glm::vec3 lightColor = glm::vec3(1.f);
     glm::vec3 lightPos = glm::vec3(10.f, 0.f, 0.f);
@@ -101,50 +94,6 @@ int main(int argc, char **argv)
     KeyAsset1->scale({5.f, 5.f, 5.f});
     KeyAsset1->translate({60.f, 0.f, 0.f});
     KeyAsset1->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset3->scale({5.f, 5.f, 5.f});
-    KeyAsset3->translate({20.f, 0.f, 0.f});
-    KeyAsset3->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset4->scale({5.f, 5.f, 5.f});
-    KeyAsset4->translate({0.f, 0.f, 0.f});
-    KeyAsset4->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset5->scale({5.f, 5.f, 5.f});
-    KeyAsset5->translate({-20.f, 0.f, 0.f});
-    KeyAsset5->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset6->scale({5.f, 5.f, 5.f});
-    KeyAsset6->translate({-40.f, 0.f, 0.f});
-    KeyAsset6->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset11->scale({5.f, 5.f, 5.f});
-    KeyAsset11->translate({-60.f, 0.f, 0.f});
-    KeyAsset11->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset22->scale({5.f, 5.f, 5.f});
-    KeyAsset22->translate({-80.f, 0.f, 0.f});
-    KeyAsset22->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset33->scale({5.f, 5.f, 5.f});
-    KeyAsset33->translate({-100.f, 0.f, 0.f});
-    KeyAsset33->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset44->scale({5.f, 5.f, 5.f});
-    KeyAsset44->translate({100.f, 0.f, 0.f});
-    KeyAsset44->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset55->scale({5.f, 5.f, 5.f});
-    KeyAsset55->translate({40.f, 0.f, 30.f});
-    KeyAsset55->rotate({0.f, 0.f, 90.f});
-
-    KeyAsset66->scale({5.f, 5.f, 5.f});
-    KeyAsset66->translate({40.f, 0.f, -30.f});
-    KeyAsset66->rotate({0.f, 0.f, 90.f});
-
-    KeyAsseyTEST->scale({25.f, 25.f, 5.f});
-    KeyAsseyTEST->translate({40.f, 40.f, -30.f});
-    KeyAsseyTEST->rotate({0.f, 0.f, 90.f});
 
     SunAsset->translate(lightPos);
     float scale = 1.f;
@@ -155,31 +104,40 @@ int main(int argc, char **argv)
     SkyBoxAsset->scale({scaleSky, scaleSky, scaleSky});
     SkyBoxAsset->rotate({0.f, 0.f, 0.f});
 
-    root->addNode(camera);
-    camera->addNode(CamerasKey);
+    ge.addSceneNode(root, camera);
+    // root->addNode(camera);
 
-    root->addNode(SkyBoxAsset);
+    ge.addSceneNode(camera, CamerasKey);
+    // camera->addNode(CamerasKey);
+
+    ge.addSkybox(SkyBoxAsset);
+    // root->addNode(SkyBoxAsset);
 
     glEnable(GL_DEPTH_TEST);
 
-    root->addNode(CubeAsset);
     CubeAsset->translate({40, 0, 20});
+    ge.addSceneNode(root, CubeAsset);
+    // root->addNode(CubeAsset);
 
-    root->addNode(CubeAsset2);
     CubeAsset2->translate({10, 0, 20});
+    ge.addSceneNode(root, CubeAsset2);
 
-    root->addNode(CubeAsset3);
+    // root->addNode(CubeAsset2);
+
     CubeAsset3->translate({15, 0, 20});
+    ge.addSceneNode(root, CubeAsset3);
 
-    root->addNode(KeyAsset1);
+    // root->addNode(CubeAsset3);
 
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
-    KeyAsset2->translate({0.8f, -0.4f, -5.5f});
+    ge.addSceneNode(root, KeyAsset1);
 
-    float scaleMax = 10.f;
-    sas::CollisionObject *CubeCollisionObject = new sas::AABB{glm::vec3{0.f, 0.f, 0.f}, glm::vec3{scaleMax, scaleMax, scaleMax}};
-    sas::CollisionObject *Cube2CollisonObject = new sas::AABB{glm::vec3{0.f, 0.f, 0.f}, glm::vec3{scaleMax, scaleMax, scaleMax}};
-    sas::CollisionObject *Cube3CollisonObject = new sas::AABB{glm::vec3{0.f, 0.f, 0.f}, glm::vec3{scaleMax, scaleMax, scaleMax}};
+    // root->addNode(KeyAsset1);
+
+    float scaleMax = 1000.f;
+    sas::CollisionObject *CubeCollisionObject = new sas::AABB;
+    sas::CollisionObject *Cube2CollisonObject = new sas::AABB;
+    sas::CollisionObject *Cube3CollisonObject = new sas::AABB;
 
     CubeAsset->addCollisionObject(CubeCollisionObject);
     CubeAsset2->addCollisionObject(Cube2CollisonObject);
@@ -194,10 +152,6 @@ int main(int argc, char **argv)
     float rotation = 0;
     int negative = 1;
 
-    //Initial Set-up
-    root->uppdateWorldTransform({});
-    root->uppdate(camera.get());
-
     float viewRange = 1000.f;
     float fovRadians = glm::radians(360.f);
 
@@ -208,7 +162,57 @@ int main(int argc, char **argv)
     cullingOctree.insert(CubeAsset3.get());
     cullingOctree.insert(KeyAsset1.get());
 
-    while (!glfwWindowShouldClose(window.getWindow()))
+    KeyAsset1->addCallback([&window = KeyAsset1]()
+                           {
+                               window->localTransform.rotation.z += 5.f * sas::Globals::instance().getDeltaTime();
+
+                               if (window->localTransform.rotation.z >= M_PI * 2.f)
+                                   window->localTransform.rotation.z = 0.f; 
+    });
+
+    int negative = -1;
+
+    CubeAsset3->addCallback([&window = CubeAsset3, &negative]() {
+        
+        float deltaX = negative * 5.f * sas::Globals::instance().getDeltaTime();
+
+        window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+
+    });
+
+    CubeAsset3->addCollisionCallback([&window = CubeAsset3, &negative]() {
+        negative = negative * -1;
+
+        float deltaX = negative * 20.f * deltaTime;
+
+        window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+    });
+    // float deltaX = negative * 5.f * deltaTime;
+
+    //     CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+    //     std::vector<sas::Asset *> collidingObjects;
+
+    //     collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
+
+    //     if (!collidingObjects.empty())
+    //     {
+    //         std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
+
+    //         negative = negative * -1;
+    //         // THIS IS A STUPID HACK I HATE IT
+    //         // However, to propperly implement this
+    //         // I would need to implement a proper
+    //         // Collision detection where on collision
+    //         // The objects move further apart aka collide
+    //         // And it is outside of this project's scope
+    //         deltaX = negative * 20.f * deltaTime;
+
+    //         CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+    //     }
+
+    ge.uppdate(camera.get());
+
+    while (!glfwWindowShouldClose(window->getWindow()))
     {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -216,34 +220,25 @@ int main(int argc, char **argv)
 
         sas::Globals::instance().setDeltaTime(deltaTime);
 
-        processKeyboardInput(CubeAsset);
+        processKeyboardInput();
+        window->clear();
 
-        glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        window.clear();
+        // ge.mainLoop(camera.get());
+
+        glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         glUniform3f(glGetUniformLocation(shader.getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
         glUniform3f(glGetUniformLocation(shader.getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
 
-        // TODO: Add support for these functions
-        //  When rendering SkyBox (Make a special field for it)
-        //  glDepthMask(GL_FALSE);
-        //  glDepthFunc(GL_LEQUAL);
+        // rotation = rotation + 5.f * deltaTime;
 
-        // SkyBoxAsset->draw(camera.get());
+        // if (rotation >= M_PI * 2)
+        // {
+        //     rotation = 0;
+        // }
 
-        // glDepthMask(GL_TRUE);
-        // glDepthFunc(GL_LESS);
-
-        rotation = rotation + 5.f * deltaTime;
-
-        if (rotation >= M_PI * 2)
-        {
-            rotation = 0;
-        }
-        
-        KeyAsset1->rotate({0.f, 0.f, rotation});
-
+        // KeyAsset1->rotate({0.f, 0.f, rotation});
 
         float deltaX = negative * 5.f * deltaTime;
 
@@ -257,15 +252,16 @@ int main(int argc, char **argv)
             std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
 
             negative = negative * -1;
-            //THIS IS A STUPID HACK I HATE IT
-            //However, to propperly implement this
-            //I would need to implement a proper
-            //Collision detection where on collision
-            //The objects move further apart aka collide
-            //And it is outside of this project's scope
-            deltaX = negative * 20.f * deltaTime;
-            
+            // THIS IS A STUPID HACK I HATE IT
+            // However, to propperly implement this
+            // I would need to implement a proper
+            // Collision detection where on collision
+            // The objects move further apart aka collide
+            // And it is outside of this project's scope
+            deltaX = negative * 50.f * deltaTime;
+
             CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+            CubeAsset3->velocity = {negative, 0.f, 0.f};
         }
 
         if (showHitBoxes)
@@ -273,18 +269,12 @@ int main(int argc, char **argv)
             collisionOctree.drawAsset(camera.get());
         }
 
-        std::vector<sas::Asset*> visible;
+        std::vector<sas::Asset *> visible;
         cullingOctree.querryView(camera.get(), 90.f, aspect, viewRange, visible);
 
-        std::cout << *camera << '\n';
-        std::cout << "There are " << visible.size() << '\n';
+        ge.uppdate(camera.get());
 
-
-        root->uppdateWorldTransform({});
-        root->uppdate(camera.get());
-
-
-        window.update();
+        window->update();
     }
 }
 
@@ -330,32 +320,21 @@ void mouse_callback(GLFWwindow *glWindow, int button, int action, int mods) noex
     }
 }
 
-void processKeyboardInput(std::shared_ptr<sas::Asset> asset) noexcept
+void processKeyboardInput() noexcept
 {
-    float cameraSpeed = 30 * deltaTime;
+    float cameraSpeed = 30 * sas::Globals::instance().getDeltaTime();
 
-    // if (window.isPressed(GLFW_KEY_ESCAPE) && canPressKey)
-    // {
-    // 	canPressKey = false;
-    // 	glfwGetCursorPos(window.getWindow(), &lastX, &lastY);
-    // 	currentStateOfGame = states.at(currentStateOfGame);
-    // 	if (ui.getVolState())
-    // 		music.play();
-    // 	else
-    // 		music.stop();
-    // }
-
-    if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
+    if (window->isPressed(GLFW_KEY_LEFT_SHIFT))
         cameraSpeed = cameraSpeed * 2;
 
     glm::vec3 direction(0.f);
-    if (window.isPressed(GLFW_KEY_W))
+    if (window->isPressed(GLFW_KEY_W))
         direction += camera->getCameraViewDirection();
-    if (window.isPressed(GLFW_KEY_S))
+    if (window->isPressed(GLFW_KEY_S))
         direction -= camera->getCameraViewDirection();
-    if (window.isPressed(GLFW_KEY_A))
+    if (window->isPressed(GLFW_KEY_A))
         direction -= camera->getCameraRight();
-    if (window.isPressed(GLFW_KEY_D))
+    if (window->isPressed(GLFW_KEY_D))
         direction += camera->getCameraRight();
 
     direction.y = 0.f;
@@ -366,39 +345,8 @@ void processKeyboardInput(std::shared_ptr<sas::Asset> asset) noexcept
         camera->move(direction * cameraSpeed);
     }
 
-    if (window.isPressed(GLFW_KEY_H))
+    if (window->isPressed(GLFW_KEY_H))
     {
         showHitBoxes = !showHitBoxes;
     }
-    if (window.isPressed(GLFW_KEY_SPACE))
-    {
-        asset->localTransform.position += glm::vec3{0.1f, 0, 0};
-    }
-
-    // static constexpr float zMin = -490.f, zMax = 490.f, xMin = -490.f, xMax = 490.f;
-    // static constexpr float szMin = -334.f;
-
-    // if (!openGate)
-    // {
-    // 	if (camera->getCameraPosition().z < szMin)
-    // 		camera->setCameraZ(szMin);
-    // }
-    // else
-    // {
-    // 	if (camera->getCameraPosition().z < zMin)
-    // 		camera->setCameraZ(zMin);
-    // }
-
-    // if (camera->getCameraPosition().z > zMax)
-    // {
-    // 	camera->setCameraZ(zMax);
-    // }
-    // if (camera->getCameraPosition().x < xMin)
-    // {
-    // 	camera->setCameraX(xMin);
-    // }
-    // if (camera->getCameraPosition().x > xMax)
-    // {
-    // 	camera->setCameraX(xMax);
-    // }
 }

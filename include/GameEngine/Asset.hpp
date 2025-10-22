@@ -1,6 +1,8 @@
 #pragma once
 
 #include <optional>
+#include <functional>
+
 #include "camera.hpp"
 #include "shader.hpp"
 #include "window.hpp"
@@ -13,7 +15,7 @@ namespace sas
 
     class Asset : public SceneNode
     {
-
+        using Callback = std::function<void()>;
     public:
         int uniformShaderID;
 
@@ -27,6 +29,8 @@ namespace sas
         std::optional<Mesh> mesh;
         CollisionObject* collisionObject = nullptr;
         Window *window;
+        std::vector<Callback> callbacks;
+        std::vector<Callback> collisionCallbacks;
 
     public:
         Asset() = default;
@@ -44,6 +48,9 @@ namespace sas
         void rotate(const glm::vec3 &axisVector) noexcept;
         void setShader(const Shader &shader) noexcept;
         void setShaderUniformID(int id) noexcept;
+
+        void addCallback(Callback cb) noexcept;
+        void addCollisionCallback(Callback cb) noexcept;
 
         void uppdate(const Camera *camera) noexcept override;
         void uppdateAttachedToCamera(const Camera *camera) noexcept override;

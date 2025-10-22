@@ -85,7 +85,7 @@ void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 {
     drawAttachedToCamera(camera);
 
-    if(collisionObject)
+    if (collisionObject)
     {
         collisionObject->uppdateBounds(worldTransform);
     }
@@ -93,13 +93,12 @@ void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
     SceneNode::uppdateAttachedToCamera(camera);
 }
 
-
 void sas::Asset::addCollisionObject(CollisionObject *colObj) noexcept
 {
     collisionObject = colObj;
 }
 
-sas::CollisionObject* sas::Asset::getCollisionObject() const noexcept
+sas::CollisionObject *sas::Asset::getCollisionObject() const noexcept
 {
 #ifdef debugMode
 
@@ -114,10 +113,14 @@ sas::CollisionObject* sas::Asset::getCollisionObject() const noexcept
 
 void sas::Asset::uppdate(const Camera *camera) noexcept
 {
+    for (auto &cb : callbacks)
+    {
+        cb();
+    }
     draw(camera);
 
-    //This is necesarry to not dereference nullptr 
-    if(collisionObject)
+    // This is necesarry to not dereference nullptr
+    if (collisionObject)
     {
         collisionObject->uppdateBounds(worldTransform);
     }
@@ -149,3 +152,14 @@ void sas::Asset::setShaderUniformID(int id) noexcept
 {
     this->uniformShaderID = id;
 }
+
+void sas::Asset::addCallback(Callback cb) noexcept
+{
+    callbacks.push_back(std::move(cb));
+}
+
+void sas::Asset::addCollisionCallback(Callback cb) noexcept
+{
+    collisionCallbacks.push_back(std::move(cb));
+}
+

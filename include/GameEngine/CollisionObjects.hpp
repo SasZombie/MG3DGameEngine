@@ -27,7 +27,7 @@ namespace sas
 
     This does not support mixing types
     AABB with Sphere
-    If we want that we should employ some kind
+    If we want said behaviour we should employ some kind
     Of visitor pattern
 */
     struct CollisionObject

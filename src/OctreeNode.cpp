@@ -38,7 +38,6 @@ void sas::OctreeNode::subdivide(Asset *node) noexcept
     octant = getOctan(*node);
     children[octant].insert(node);
     count = 0;
-
 }
 
 size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
@@ -55,7 +54,6 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 
     return octan;
 }
-
 
 void sas::OctreeNode::insert(Asset *node) noexcept
 {
@@ -101,6 +99,7 @@ void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
         const auto &asset = elements[i];
 
         hitbox->worldTransform = asset->getCollisionObject()->worldTransform;
+        std::cout << asset->getCollisionObject()->worldTransform << '\n';
         // hitbox->localTransform = asset->getCollisionObject()->worldTransform //asset->localTransform;
 
         if (auto p = asset->parent.lock())
@@ -242,30 +241,28 @@ bool sas::OctreeNode::intersectsView(const Camera *cam,
     return false;
 }
 
-void sas::OctreeNode::querryView(const Camera *cam,
-                                 float fovY, float aspect, float viewRange,
+void sas::OctreeNode::querryView(const Camera *cam, float fovY, float aspect, float viewRange,
                                  std::vector<Asset *> &visible) const noexcept
 {
     if (!intersectsView(cam, fovY, aspect, viewRange, this->position, this->sizexyz))
         return;
 
-    std::cout << "SUNT IN CUUUB\n";
     if (isLeaf())
     {
         for (size_t i = 0; i < count; ++i)
         {
-            Asset *a = elements[i];
-            if (!a)
+            Asset *asst = elements[i];
+            if (!asst)
                 continue;
 
-            glm::vec3 pos = a->worldTransform.position;
+            glm::vec3 pos = asst->worldTransform.position;
             if (pointInPOV(cam->worldTransform.position,
                            cam->getCameraViewDirection(),
                            cam->getCameraUp(),
                            cam->getCameraRight(),
                            fovY, aspect, viewRange, pos))
             {
-                visible.push_back(a);
+                visible.push_back(asst);
             }
         }
     }

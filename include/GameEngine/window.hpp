@@ -29,6 +29,7 @@ class Window
 		double ypos;
 	
 	public:
+		Window() noexcept = default;
 		Window(const char* name, int width, int height);
 		~Window() noexcept;
 		GLFWwindow* getWindow() const noexcept;
