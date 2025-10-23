@@ -133,12 +133,6 @@ int main(int argc, char **argv)
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
     ge.addSceneNode(root, KeyAsset1);
 
-    // collisionOctree.insert(CubeAsset.get());
-    // collisionOctree.insert(CubeAsset2.get());
-    // collisionOctree.insert(CubeAsset3.get());
-
-    // collisionOctree.addHitboxAsset(FullCubeAsset.get());
-
     float rotation = 0;
     int negative = 1;
 
@@ -147,10 +141,6 @@ int main(int argc, char **argv)
 
     float aspect = static_cast<float>(winWidth) / static_cast<float>(winHeight);
 
-    // cullingOctree.insert(CubeAsset.get());
-    // cullingOctree.insert(CubeAsset2.get());
-    // cullingOctree.insert(CubeAsset3.get());
-    // cullingOctree.insert(KeyAsset1.get());
 
     KeyAsset1->addCallback([&window = KeyAsset1]()
                            {
@@ -159,7 +149,6 @@ int main(int argc, char **argv)
                                if (window->localTransform.rotation.z >= M_PI * 2.f)
                                    window->localTransform.rotation.z = 0.f; });
 
-    // int negative = -1;
 
     CubeAsset3->addCallback([&window = CubeAsset3, &negative]()
                             {
@@ -177,9 +166,6 @@ int main(int argc, char **argv)
                                 self.localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
                             });
 
-    // ge.sceneNodes->uppdateWorldTransform({});
-    // ge.sceneNodes->uppdate(camera.get());
-    // ge.uppdate(camera.get());
 
     while (!glfwWindowShouldClose(window->getWindow()))
     {
@@ -192,54 +178,11 @@ int main(int argc, char **argv)
         processKeyboardInput();
         window->clear();
 
-        // ge.mainLoop(camera.get());
-
         glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         glUniform3f(glGetUniformLocation(shader.getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
         glUniform3f(glGetUniformLocation(shader.getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
-
-        // rotation = rotation + 5.f * deltaTime;
-
-        // if (rotation >= M_PI * 2)
-        // {
-        //     rotation = 0;
-        // }
-
-        // KeyAsset1->rotate({0.f, 0.f, rotation});
-
-        // float deltaX = negative * 5.f * deltaTime;
-
-        // CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-        // std::vector<sas::Asset *> collidingObjects;
-
-        // collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
-
-        // if (!collidingObjects.empty())
-        // {
-        //     std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
-
-        //     negative = negative * -1;
-        //     // THIS IS A STUPID HACK I HATE IT
-        //     // However, to propperly implement this
-        //     // I would need to implement a proper
-        //     // Collision detection where on collision
-        //     // The objects move further apart aka collide
-        //     // And it is outside of this project's scope
-        //     deltaX = negative * 50.f * deltaTime;
-
-        //     CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-        //     CubeAsset3->velocity = {negative, 0.f, 0.f};
-        // }
-
-        // if (showHitBoxes)
-        // {
-        //     collisionOctree.drawAsset(camera.get());
-        // }
-
-        // std::vector<sas::Asset *> visible;
-        // cullingOctree.querryView(camera.get(), 90.f, aspect, viewRange, visible);
 
         ge.uppdate(camera.get());
 
