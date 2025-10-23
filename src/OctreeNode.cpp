@@ -56,7 +56,6 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 
 void sas::OctreeNode::insert(Asset *node) noexcept
 {
-    std::cout << "Insert\n";
 #ifdef debugMode
 
     if (!node->getCollisionObject())
