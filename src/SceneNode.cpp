@@ -29,8 +29,8 @@ void sas::SceneNode::uppdateWorldTransformCamera(const Transform &parentWorldTra
 void sas::SceneNode::uppdate(const Camera *camera) noexcept
 {
 
-    velocity += acceleration * Globals::instance().getDeltaTime();
-    localTransform.position += velocity * Globals::instance().getDeltaTime();
+    // velocity += acceleration * Globals::instance().getDeltaTime();
+    // localTransform.position += velocity * Globals::instance().getDeltaTime();
     for (auto &component : components)
     {
         component->uppdate(camera);
@@ -48,7 +48,7 @@ void sas::SceneNode::uppdateAttachedToCamera(const Camera *camera) noexcept
 
 void sas::SceneNode::triggerCollision(const std::vector<SceneNode *> &others) noexcept
 {
-    onCollision.emit(this, others);
+
 }
 
 void sas::SceneNode::uppdateWorldTransform(const Transform &parentWorldTransform) noexcept

@@ -17,6 +17,11 @@
 
 namespace sas
 {
+    //TODO: This class cannot update itself at the moment
+    //That means if I have multiple assets and they change
+    //Position, they should be placed in a different leaf
+    //I dont know if this is important for the current
+    //Goal of this application
     class OctreeNode
     {
         glm::vec3 position;
@@ -59,11 +64,15 @@ namespace sas
                            const glm::vec3 &pos2, const glm::vec3 &size2) const noexcept;
 
         // The container could be something other than a std::vector
-        virtual void queryIntersection(const Asset &ast, std::vector<Asset *> &results) const noexcept;
+        virtual void queryIntersection(Asset &ast, std::vector<Asset *> &results) const noexcept;
 
         void querryView(const Camera *cam,
                         float fovY, float aspect, float viewRange,
                         std::vector<Asset *> &visible) const noexcept;
+
+        void checkCollisions() const noexcept;
+        void getAllPoints(std::vector<Asset *> &result) const noexcept;
+
 
         // If any intersects
         virtual void queryIntersection(std::vector<Asset *> &results) const noexcept;

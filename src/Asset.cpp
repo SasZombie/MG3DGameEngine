@@ -98,15 +98,20 @@ void sas::Asset::addCollisionObject(CollisionObject *colObj) noexcept
     collisionObject = colObj;
 }
 
+bool sas::Asset::hasCollisionObject() const noexcept
+{
+    return !(collisionObject == nullptr);
+}
+
 sas::CollisionObject *sas::Asset::getCollisionObject() const noexcept
 {
 #ifdef debugMode
 
-    if (!collisionObject)
-    {
-        std::cerr << "Warning! Calling getCollisionObject without an collision object\n";
-        return {};
-    }
+    // if (!collisionObject)
+    // {
+    //     std::cerr << "Warning! Calling getCollisionObject without an collision object\n";
+    //     return {};
+    // }
 #endif
     return collisionObject;
 }
@@ -158,8 +163,12 @@ void sas::Asset::addCallback(Callback cb) noexcept
     callbacks.push_back(std::move(cb));
 }
 
-void sas::Asset::addCollisionCallback(Callback cb) noexcept
+void sas::Asset::onCollision(const Signal<Asset&, Asset&>::collsionCallback& cb) noexcept
 {
-    collisionCallbacks.push_back(std::move(cb));
+    this->signals.connect(cb);
 }
 
+void sas::Asset::emit(Asset& other) noexcept
+{
+    signals.emit(*this, other);
+}

@@ -16,23 +16,22 @@ namespace sas
     struct AABB;
     struct Sphere;
 
-///@brief
-/*
-    The collision when something is attached to a camerais not yet
-    Implemented
-    This is because unlike an average asset
-    Camera rotates and objects attached to it
-    Rottate as well. This makes it annoying.
-    Collision between 2 objects work always even when rotated
+    ///@brief
+    /*
+        The collision when something is attached to a camerais not yet
+        Implemented
+        This is because unlike an average asset
+        Camera rotates and objects attached to it
+        Rottate as well. This makes it annoying.
+        Collision between 2 objects work always even when rotated
 
-    This does not support mixing types
-    AABB with Sphere
-    If we want said behaviour we should employ some kind
-    Of visitor pattern
-*/
+        This does not support mixing types
+        AABB with Sphere
+        If we want said behaviour we should employ some kind
+        Of visitor pattern
+    */
     struct CollisionObject
     {
-        bool isColliding = false;
         Transform worldTransform;
 
         virtual bool checkCollision(const CollisionObject &other) = 0;
@@ -41,7 +40,7 @@ namespace sas
         virtual ~CollisionObject() noexcept = default;
     };
 
-    // TOOD: Maybe implement Shhere as well
+    // TODO: Maybe implement Shhere as well
     struct Sphere : public CollisionObject
     {
         glm::vec3 center;
@@ -74,10 +73,6 @@ namespace sas
         bool checkCollision(const CollisionObject &otherAABB) override
         {
             const AABB &other = static_cast<const AABB &>(otherAABB);
-            // std::cout << "Dau check la min = " << min.x << ' ' << min.y << ' ' << min.z << '\n'
-            //           << "Dau check la min = " << max.x << ' ' << max.y << ' ' << max.z << '\n'
-            //           << "Dau check la min = " << other.min.x << ' ' << other.min.y << ' ' << other.min.z << '\n'
-            //           << "Dau check la min = " << other.max.x << ' ' << other.max.y << ' ' << other.max.z << '\n';
 
             return (other.min.x <= this->max.x && other.max.x >= this->min.x) &&
                    (other.min.y <= this->max.y && other.max.y >= this->min.y) &&

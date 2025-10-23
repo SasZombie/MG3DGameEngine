@@ -4,12 +4,19 @@ sas::GameEngine::GameEngine() noexcept
     : window("Game Engine", winWidth, winHeight)
 {
     sceneNodes = std::make_shared<SceneNode>();
+
+    collisionOctree = {{0.f, 0.f, 0.f}, {100.f, 100.f, 100.f}};
+    cullingOctree = {{0.f, 0.f, 0.f}, {100.f, 100.f, 100.f}};
 }
 
 void sas::GameEngine::addSceneNode(SceneSharedNode root, std::shared_ptr<Asset> asset) noexcept
 {
     root->addNode(asset);
     cullingOctree.insert(asset.get());
+    if(asset->hasCollisionObject())
+    {
+        collisionOctree.insert(asset.get());
+    }
 }
 
 void sas::GameEngine::addSkybox(std::shared_ptr<Asset> asset) noexcept
@@ -32,16 +39,16 @@ sas::SceneSharedNode sas::GameEngine::getRoot() const noexcept
     return sceneNodes;
 }
 
-void sas::GameEngine::checkCollision() noexcept
-{
-    // std::vector<sas::Asset *> collidingObjects;
-    // collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
+// void sas::GameEngine::checkCollision() noexcept
+// {
+//     // std::vector<sas::Asset *> collidingObjects;
+//     // collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
 
-    for(auto& node : sceneNodes->components)
-    {
+//     for(auto& node : sceneNodes->components)
+//     {
 
-    }
-}
+//     }
+// }
 
 void sas::GameEngine::uppdate(const Camera *camera) noexcept
 {
@@ -59,6 +66,9 @@ void sas::GameEngine::uppdate(const Camera *camera) noexcept
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
     }
+
+    collisionOctree.checkCollisions();
+
 
     sceneNodes->uppdateWorldTransform({});
     sceneNodes->uppdate(camera);

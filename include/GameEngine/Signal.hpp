@@ -11,9 +11,14 @@ namespace sas
     class Signal
     {
     public:
-        using callBack = std::function<void(Args...)>;
+        //OnHitCallBack :)
+        using collsionCallback = std::function<void(Args...)>;
 
-        void connect(callBack cb) noexcept
+        Signal() = default;
+        Signal(const Signal &) = delete;
+        Signal &operator=(const Signal &) = delete;
+
+        void connect(collsionCallback cb) noexcept
         {
             callBacks.push_back(cb);
         }
@@ -25,15 +30,14 @@ namespace sas
 
         void emit(Args... args)
         {
-            for(auto& s : callBacks)
+            for (auto &s : callBacks)
             {
                 s(args...);
             }
         }
 
     private:
-        std::vector<callBack> callBacks;
+        std::vector<collsionCallback> callBacks;
     };
 
-    
 } // namespace sas

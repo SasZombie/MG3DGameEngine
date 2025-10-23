@@ -31,7 +31,6 @@ void sas::OctreeNode::subdivide(Asset *node) noexcept
     for (size_t i = 0; i < maxObjects; ++i)
     {
         octant = getOctan(*elements[i]);
-        std::cout << octant << '\n';
         children[octant].insert(elements[i]);
     }
 
@@ -44,7 +43,7 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 {
     int octan = 0;
     const auto &nodePosition = node.worldTransform.position;
-    std::cout << "Node Position = " << nodePosition.x << ' ' << nodePosition.y << ' ' << nodePosition.z << '\n';
+    // std::cout << "Node Position = " << nodePosition.x << ' ' << nodePosition.y << ' ' << nodePosition.z << '\n';
     if (position.x >= nodePosition.x)
         octan |= 1;
     if (position.y >= nodePosition.y)
@@ -57,13 +56,14 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 
 void sas::OctreeNode::insert(Asset *node) noexcept
 {
+    std::cout << "Insert\n";
 #ifdef debugMode
 
     if (!node->getCollisionObject())
     {
-        std::cerr << "Warning! Object inserted without any Collision Object(s)  \nNote that"
-                     " only the object that has the collision object should/needs to be inserted\n"
-                     "If you plan on adding it later, you can safely ignore this warning";
+        // std::cerr << "Warning! Object inserted without any Collision Object(s)  \nNote that"
+        //              " only the object that has the collision object should/needs to be inserted\n"
+        //              "If you plan on adding it later, you can safely ignore this warning";
     }
 #endif
 
@@ -99,7 +99,7 @@ void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
         const auto &asset = elements[i];
 
         hitbox->worldTransform = asset->getCollisionObject()->worldTransform;
-        std::cout << asset->getCollisionObject()->worldTransform << '\n';
+        // std::cout << asset->getCollisionObject()->worldTransform << '\n';
         // hitbox->localTransform = asset->getCollisionObject()->worldTransform //asset->localTransform;
 
         if (auto p = asset->parent.lock())
@@ -118,18 +118,35 @@ void sas::OctreeNode::drawAsset(const Camera *camera) noexcept
     }
 }
 
-bool sas::OctreeNode::intersectAABB(const glm::vec3 &pos1, const glm::vec3 &size1,
-                                    const glm::vec3 &pos2, const glm::vec3 &size2) const noexcept
+// bool sas::OctreeNode::intersectAABB(const glm::vec3 &pos1, const glm::vec3 &size1,
+//                                     const glm::vec3 &pos2, const glm::vec3 &size2) const noexcept
+// {
+//     return !(pos1.x + size1.x < pos2.x || pos1.x > pos2.x + size2.x ||
+//              pos1.y + size1.y < pos2.y || pos1.y > pos2.y + size2.y ||
+//              pos1.z + size1.z < pos2.z || pos1.z > pos2.z + size2.z);
+// }
+
+bool sas::OctreeNode::intersectAABB(const glm::vec3 &center1, const glm::vec3 &size1,
+                                    const glm::vec3 &center2, const glm::vec3 &size2) const noexcept
 {
-    return !(pos1.x + size1.x < pos2.x || pos1.x > pos2.x + size2.x ||
-             pos1.y + size1.y < pos2.y || pos1.y > pos2.y + size2.y ||
-             pos1.z + size1.z < pos2.z || pos1.z > pos2.z + size2.z);
+    glm::vec3 half1 = size1 * 0.5f;
+    glm::vec3 half2 = size2 * 0.5f;
+
+    glm::vec3 min1 = center1 - half1;
+    glm::vec3 max1 = center1 + half1;
+    glm::vec3 min2 = center2 - half2;
+    glm::vec3 max2 = center2 + half2;
+
+    return !(max1.x < min2.x || min1.x > max2.x ||
+             max1.y < min2.y || min1.y > max2.y ||
+             max1.z < min2.z || min1.z > max2.z);
 }
 
 // The container could be something other than a std::vector
-void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::Asset *> &results) const noexcept
+void sas::OctreeNode::queryIntersection(sas::Asset &ast, std::vector<sas::Asset *> &results) const noexcept
 {
     // General intersection for this. We don't care about accuracy here
+
     if (!intersectAABB(position, sizexyz, ast.worldTransform.position, ast.worldTransform.scale))
         return;
 
@@ -145,12 +162,7 @@ void sas::OctreeNode::queryIntersection(const sas::Asset &ast, std::vector<sas::
 
             if (ast.getCollisionObject()->checkCollision(*asset->getCollisionObject()))
             {
-                asset->getCollisionObject()->isColliding = true;
                 results.push_back(asset);
-            }
-            else
-            {
-                asset->getCollisionObject()->isColliding = false;
             }
         }
     }
@@ -270,5 +282,43 @@ void sas::OctreeNode::querryView(const Camera *cam, float fovY, float aspect, fl
     {
         for (const auto &child : children)
             child.querryView(cam, fovY, aspect, viewRange, visible);
+    }
+}
+
+void sas::OctreeNode::checkCollisions() const noexcept
+{
+    std::vector<Asset *> allAssets;
+    getAllPoints(allAssets);
+
+    for (auto &p : allAssets)
+    {
+        std::vector<Asset *> results;
+
+        // std::cout << "{\n";
+        // std::cout << p->getCollisionObject()->worldTransform << '\n';
+        queryIntersection(*p, results);
+
+        for (auto &other : results)
+        {
+            p->emit(*other);
+        }
+    }
+}
+
+void sas::OctreeNode::getAllPoints(std::vector<Asset *> &result) const noexcept
+{
+    if (isLeaf())
+    {
+        for (size_t i = 0; i < count; ++i)
+        {
+            result.push_back(elements[i]);
+        }
+    }
+    else
+    {
+        for (auto &child : children)
+        {
+            child.getAllPoints(result);
+        }
     }
 }

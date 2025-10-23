@@ -7,6 +7,7 @@
 #include "shader.hpp"
 #include "window.hpp"
 #include "mesh.hpp"
+#include "Signal.hpp"
 #include "CollisionObjects.hpp"
 
 // Something that you can draw on the screen
@@ -30,8 +31,9 @@ namespace sas
         CollisionObject* collisionObject = nullptr;
         Window *window;
         std::vector<Callback> callbacks;
-        std::vector<Callback> collisionCallbacks;
 
+        Signal<Asset&, Asset&> signals;
+        
     public:
         Asset() = default;
         // Not owining window
@@ -50,13 +52,16 @@ namespace sas
         void setShaderUniformID(int id) noexcept;
 
         void addCallback(Callback cb) noexcept;
-        void addCollisionCallback(Callback cb) noexcept;
+        void onCollision(const Signal<Asset&, Asset&>::collsionCallback& cb) noexcept;
+        void emit(Asset& other) noexcept;
 
         void uppdate(const Camera *camera) noexcept override;
         void uppdateAttachedToCamera(const Camera *camera) noexcept override;
         
+
         void addCollisionObject(CollisionObject *colObj) noexcept;
-        CollisionObject* getCollisionObject() const noexcept;
+        bool hasCollisionObject() const noexcept;
+        CollisionObject* getCollisionObject() const noexcept;       
 
         bool operator==(const Asset &other) const noexcept
         {

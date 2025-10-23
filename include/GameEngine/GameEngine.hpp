@@ -38,7 +38,7 @@ namespace sas
 
         SceneSharedNode getRoot() const noexcept;
 
-        void checkCollision() noexcept;
+        // void checkCollision() noexcept;
 
         void uppdate(const Camera* camera) noexcept;
 

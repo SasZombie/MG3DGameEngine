@@ -42,8 +42,8 @@ glm::vec3 keyPosition(322.f, -20.f, 404.f);
 constexpr size_t winWidth = 1920, winHeight = 1080;
 
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
-sas::OctreeNode collisionOctree({0, 0, 0}, {100, 100, 100});
-sas::OctreeNode cullingOctree({0, 0, 0}, {100, 100, 100});
+// sas::OctreeNode collisionOctree({0, 0, 0}, {100, 100, 100});
+// sas::OctreeNode cullingOctree({0, 0, 0}, {100, 100, 100});
 
 bool showHitBoxes = true;
 
@@ -85,6 +85,15 @@ int main(int argc, char **argv)
     std::shared_ptr<sas::Asset> CamerasKey = std::make_shared<sas::Asset>(shader, key, window);
     std::shared_ptr<sas::Asset> KeyAsset1 = std::make_shared<sas::Asset>(shader, key, window);
 
+    float scaleMax = 1000.f;
+    sas::CollisionObject *CubeCollisionObject = new sas::AABB;
+    sas::CollisionObject *Cube2CollisonObject = new sas::AABB;
+    sas::CollisionObject *Cube3CollisonObject = new sas::AABB;
+
+    CubeAsset->addCollisionObject(CubeCollisionObject);
+    CubeAsset2->addCollisionObject(Cube2CollisonObject);
+    CubeAsset3->addCollisionObject(Cube3CollisonObject);
+
     glfwSetCursorPosCallback(window->getWindow(), mouse_callback);
     glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
 
@@ -105,49 +114,30 @@ int main(int argc, char **argv)
     SkyBoxAsset->rotate({0.f, 0.f, 0.f});
 
     ge.addSceneNode(root, camera);
-    // root->addNode(camera);
 
     ge.addSceneNode(camera, CamerasKey);
-    // camera->addNode(CamerasKey);
 
     ge.addSkybox(SkyBoxAsset);
-    // root->addNode(SkyBoxAsset);
 
     glEnable(GL_DEPTH_TEST);
 
-    CubeAsset->translate({40, 0, 20});
+    CubeAsset->translate({-5, 0, -5});
     ge.addSceneNode(root, CubeAsset);
-    // root->addNode(CubeAsset);
 
-    CubeAsset2->translate({10, 0, 20});
+    CubeAsset2->translate({20, 0, -5});
     ge.addSceneNode(root, CubeAsset2);
 
-    // root->addNode(CubeAsset2);
-
-    CubeAsset3->translate({15, 0, 20});
+    CubeAsset3->translate({0, 0, -5});
     ge.addSceneNode(root, CubeAsset3);
-
-    // root->addNode(CubeAsset3);
 
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
     ge.addSceneNode(root, KeyAsset1);
 
-    // root->addNode(KeyAsset1);
+    // collisionOctree.insert(CubeAsset.get());
+    // collisionOctree.insert(CubeAsset2.get());
+    // collisionOctree.insert(CubeAsset3.get());
 
-    float scaleMax = 1000.f;
-    sas::CollisionObject *CubeCollisionObject = new sas::AABB;
-    sas::CollisionObject *Cube2CollisonObject = new sas::AABB;
-    sas::CollisionObject *Cube3CollisonObject = new sas::AABB;
-
-    CubeAsset->addCollisionObject(CubeCollisionObject);
-    CubeAsset2->addCollisionObject(Cube2CollisonObject);
-    CubeAsset3->addCollisionObject(Cube3CollisonObject);
-
-    collisionOctree.insert(CubeAsset.get());
-    collisionOctree.insert(CubeAsset2.get());
-    collisionOctree.insert(CubeAsset3.get());
-
-    collisionOctree.addHitboxAsset(FullCubeAsset.get());
+    // collisionOctree.addHitboxAsset(FullCubeAsset.get());
 
     float rotation = 0;
     int negative = 1;
@@ -157,60 +147,39 @@ int main(int argc, char **argv)
 
     float aspect = static_cast<float>(winWidth) / static_cast<float>(winHeight);
 
-    cullingOctree.insert(CubeAsset.get());
-    cullingOctree.insert(CubeAsset2.get());
-    cullingOctree.insert(CubeAsset3.get());
-    cullingOctree.insert(KeyAsset1.get());
+    // cullingOctree.insert(CubeAsset.get());
+    // cullingOctree.insert(CubeAsset2.get());
+    // cullingOctree.insert(CubeAsset3.get());
+    // cullingOctree.insert(KeyAsset1.get());
 
     KeyAsset1->addCallback([&window = KeyAsset1]()
                            {
                                window->localTransform.rotation.z += 5.f * sas::Globals::instance().getDeltaTime();
 
                                if (window->localTransform.rotation.z >= M_PI * 2.f)
-                                   window->localTransform.rotation.z = 0.f; 
-    });
+                                   window->localTransform.rotation.z = 0.f; });
 
-    int negative = -1;
+    // int negative = -1;
 
-    CubeAsset3->addCallback([&window = CubeAsset3, &negative]() {
-        
-        float deltaX = negative * 5.f * sas::Globals::instance().getDeltaTime();
+    CubeAsset3->addCallback([&window = CubeAsset3, &negative]()
+                            {
+                                float deltaX = negative * 2.f * sas::Globals::instance().getDeltaTime();
 
-        window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+                                window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+                            });
 
-    });
+    CubeAsset3->onCollision([&negative](sas::Asset &self, sas::Asset &other)
+                            {
+                                negative = negative * -1;
 
-    CubeAsset3->addCollisionCallback([&window = CubeAsset3, &negative]() {
-        negative = negative * -1;
+                                float deltaX = negative * 50.f * deltaTime;
 
-        float deltaX = negative * 20.f * deltaTime;
+                                self.localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+                            });
 
-        window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-    });
-    // float deltaX = negative * 5.f * deltaTime;
-
-    //     CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-    //     std::vector<sas::Asset *> collidingObjects;
-
-    //     collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
-
-    //     if (!collidingObjects.empty())
-    //     {
-    //         std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
-
-    //         negative = negative * -1;
-    //         // THIS IS A STUPID HACK I HATE IT
-    //         // However, to propperly implement this
-    //         // I would need to implement a proper
-    //         // Collision detection where on collision
-    //         // The objects move further apart aka collide
-    //         // And it is outside of this project's scope
-    //         deltaX = negative * 20.f * deltaTime;
-
-    //         CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-    //     }
-
-    ge.uppdate(camera.get());
+    // ge.sceneNodes->uppdateWorldTransform({});
+    // ge.sceneNodes->uppdate(camera.get());
+    // ge.uppdate(camera.get());
 
     while (!glfwWindowShouldClose(window->getWindow()))
     {
@@ -240,37 +209,37 @@ int main(int argc, char **argv)
 
         // KeyAsset1->rotate({0.f, 0.f, rotation});
 
-        float deltaX = negative * 5.f * deltaTime;
+        // float deltaX = negative * 5.f * deltaTime;
 
-        CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-        std::vector<sas::Asset *> collidingObjects;
+        // CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+        // std::vector<sas::Asset *> collidingObjects;
 
-        collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
+        // collisionOctree.queryIntersection(*CubeAsset3.get(), collidingObjects);
 
-        if (!collidingObjects.empty())
-        {
-            std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
+        // if (!collidingObjects.empty())
+        // {
+        //     std::cout << "Entity is colliding with " << collidingObjects.size() << " objects!\n";
 
-            negative = negative * -1;
-            // THIS IS A STUPID HACK I HATE IT
-            // However, to propperly implement this
-            // I would need to implement a proper
-            // Collision detection where on collision
-            // The objects move further apart aka collide
-            // And it is outside of this project's scope
-            deltaX = negative * 50.f * deltaTime;
+        //     negative = negative * -1;
+        //     // THIS IS A STUPID HACK I HATE IT
+        //     // However, to propperly implement this
+        //     // I would need to implement a proper
+        //     // Collision detection where on collision
+        //     // The objects move further apart aka collide
+        //     // And it is outside of this project's scope
+        //     deltaX = negative * 50.f * deltaTime;
 
-            CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-            CubeAsset3->velocity = {negative, 0.f, 0.f};
-        }
+        //     CubeAsset3->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
+        //     CubeAsset3->velocity = {negative, 0.f, 0.f};
+        // }
 
-        if (showHitBoxes)
-        {
-            collisionOctree.drawAsset(camera.get());
-        }
+        // if (showHitBoxes)
+        // {
+        //     collisionOctree.drawAsset(camera.get());
+        // }
 
-        std::vector<sas::Asset *> visible;
-        cullingOctree.querryView(camera.get(), 90.f, aspect, viewRange, visible);
+        // std::vector<sas::Asset *> visible;
+        // cullingOctree.querryView(camera.get(), 90.f, aspect, viewRange, visible);
 
         ge.uppdate(camera.get());
 

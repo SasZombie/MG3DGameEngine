@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include "Transform.hpp"
-#include "Signal.hpp"
 
 struct Camera;
 
@@ -22,7 +21,6 @@ namespace sas
         Transform localTransform;
         Transform worldTransform;
         std::vector<SceneSharedNode> components;
-        Signal<SceneNode*, const std::vector<SceneNode*>&> onCollision;
 
         
         //Used only by a root node
