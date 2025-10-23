@@ -3,6 +3,7 @@
 sas::OctreeNode::OctreeNode(const glm::vec3 &pos, const glm::vec3 &size) noexcept
     : position(pos), sizexyz(size)
 {
+    elements.reserve(maxObjects);
 }
 
 bool sas::OctreeNode::isLeaf() const noexcept
@@ -43,7 +44,6 @@ size_t sas::OctreeNode::getOctan(const Asset &node) const noexcept
 {
     int octan = 0;
     const auto &nodePosition = node.worldTransform.position;
-    // std::cout << "Node Position = " << nodePosition.x << ' ' << nodePosition.y << ' ' << nodePosition.z << '\n';
     if (position.x >= nodePosition.x)
         octan |= 1;
     if (position.y >= nodePosition.y)
@@ -71,11 +71,17 @@ void sas::OctreeNode::insert(Asset *node) noexcept
 
         if (count >= maxObjects)
         {
+            if (sizexyz.x <= 0.01f || sizexyz.y <= 0.01f || sizexyz.z <= 0.01f)
+            {
+                elements.push_back(node);
+                count++;
+                return;
+            }
             subdivide(node);
         }
         else
         {
-            elements[count] = node;
+            elements.push_back(node);
             ++count;
         }
     }
@@ -252,9 +258,9 @@ bool sas::OctreeNode::intersectsView(const Camera *cam,
     return false;
 }
 
-void sas::OctreeNode::querryView(const Camera *cam, float fovY, float aspect, float viewRange,
-                                 std::vector<Asset *> &visible) const noexcept
+void sas::OctreeNode::querryView(const Camera *cam, std::vector<Asset *> &visible) const noexcept
 {
+    const auto& [fovY, aspect, viewRange] = cam->getCameraSettings();
     if (!intersectsView(cam, fovY, aspect, viewRange, this->position, this->sizexyz))
         return;
 
@@ -280,7 +286,7 @@ void sas::OctreeNode::querryView(const Camera *cam, float fovY, float aspect, fl
     else
     {
         for (const auto &child : children)
-            child.querryView(cam, fovY, aspect, viewRange, visible);
+            child.querryView(cam, visible);
     }
 }
 

@@ -25,6 +25,8 @@ namespace sas
 
         Asset* skybox;
 
+        std::vector<Asset*> drawingResults;
+
     public:
         GameEngine() noexcept;
 

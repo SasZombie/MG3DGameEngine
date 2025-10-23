@@ -83,7 +83,7 @@ void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
 
 void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 {
-    drawAttachedToCamera(camera);
+    // drawAttachedToCamera(camera);
 
     if (collisionObject)
     {
@@ -122,7 +122,7 @@ void sas::Asset::uppdate(const Camera *camera) noexcept
     {
         cb();
     }
-    draw(camera);
+    // draw(camera);
 
     // This is necesarry to not dereference nullptr
     if (collisionObject)

@@ -77,6 +77,11 @@ void Camera::setCameraViewDirection(const glm::vec3 &newDir) noexcept
     this->cameraRight = glm::cross(cameraViewDirection, cameraUp);
 }
 
+sas::CameraSettings Camera::getCameraSettings() const noexcept
+{
+    return cameraSettings;
+}
+
 void Camera::uppdate(const Camera *camera) noexcept
 {
     (void)camera;

@@ -43,7 +43,7 @@ constexpr size_t winWidth = 1920, winHeight = 1080;
 
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
 // sas::OctreeNode collisionOctree({0, 0, 0}, {100, 100, 100});
-// sas::OctreeNode cullingOctree({0, 0, 0}, {100, 100, 100});
+sas::OctreeNode cullingOctree({0, 0, 0}, {100, 100, 100});
 
 bool showHitBoxes = true;
 
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 
     ge.addSceneNode(root, camera);
 
-    ge.addSceneNode(camera, CamerasKey);
+    // ge.addSceneNode(camera, CamerasKey);
 
     ge.addSkybox(SkyBoxAsset);
 
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
     ge.addSceneNode(root, CubeAsset3);
 
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
-    ge.addSceneNode(root, KeyAsset1);
+    // ge.addSceneNode(root, KeyAsset1);
 
     float rotation = 0;
     int negative = 1;
@@ -166,6 +166,10 @@ int main(int argc, char **argv)
                                 self.localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
                             });
 
+    cullingOctree.insert(CubeAsset.get());
+    cullingOctree.insert(CubeAsset2.get());
+    cullingOctree.insert(CubeAsset3.get());
+
 
     while (!glfwWindowShouldClose(window->getWindow()))
     {
@@ -185,6 +189,11 @@ int main(int argc, char **argv)
         glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
 
         ge.uppdate(camera.get());
+        // std::vector<sas::Asset*> results;
+        // cullingOctree.querryView(camera.get(), results);
+
+        // std::cout << results.size() << '\n';
+
 
         window->update();
     }

@@ -28,7 +28,7 @@ namespace sas
         glm::vec3 sizexyz;
 
         mutable Asset *hitbox;
-        std::array<Asset *, 5> elements;
+        std::vector<Asset *> elements;
         std::vector<OctreeNode> children;
 
         size_t maxObjects = 5;
@@ -49,11 +49,6 @@ namespace sas
         bool isLeaf() const noexcept;
         size_t getOctan(const Asset &node) const noexcept;
 
-        // TODO: This function potentially runs for ever
-        //  This is because there is no limit on how small
-        //  A cube can be, meaning that if I insert over 5
-        //  Elements that occupy the same place in space
-        //  The tree will try to subdivide infinitly
         void subdivide(Asset *node) noexcept;
         
         void insert(Asset *node) noexcept;
@@ -66,9 +61,7 @@ namespace sas
         // The container could be something other than a std::vector
         virtual void queryIntersection(Asset &ast, std::vector<Asset *> &results) const noexcept;
 
-        void querryView(const Camera *cam,
-                        float fovY, float aspect, float viewRange,
-                        std::vector<Asset *> &visible) const noexcept;
+        void querryView(const Camera *cam, std::vector<Asset *> &visible) const noexcept;
 
         void checkCollisions() const noexcept;
         void getAllPoints(std::vector<Asset *> &result) const noexcept;

@@ -19,6 +19,13 @@
 namespace sas
 {
 	class Asset;
+
+	struct CameraSettings
+	{
+		float fov = 90.f;
+		float aspect = 16.f/9.f;
+		float viewRange = 1000.f;
+	};
 }
 
 class Camera : public sas::SceneNode
@@ -26,6 +33,8 @@ class Camera : public sas::SceneNode
 
 	private:
 		float cameraHeight = -10.f;
+
+		sas::CameraSettings cameraSettings;
 
 		glm::vec3 cameraViewDirection;
 		glm::vec3 cameraUp;
@@ -71,6 +80,7 @@ class Camera : public sas::SceneNode
 		void setCameraPosition(const glm::vec3 &newDir) noexcept;
 		void setCameraViewDirection(const glm::vec3 &newDir) noexcept;
 
+		sas::CameraSettings getCameraSettings() const noexcept;
 		void uppdate(const Camera* camera) noexcept override;
 		float getCameraHeight() const noexcept;
 
