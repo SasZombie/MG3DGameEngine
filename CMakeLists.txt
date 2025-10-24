@@ -12,7 +12,6 @@ set(ENGINE_SOURCES
     src/camera.cpp
     src/mesh.cpp
     src/meshLoaderObj.cpp
-    src/Object.cpp
     src/texture.cpp
     src/UI.cpp
     src/shader.cpp
@@ -22,6 +21,7 @@ set(ENGINE_SOURCES
     src/OctreeNode.cpp
     src/Transform.cpp
     src/GameEngine.cpp
+    src/AssetManager.cpp
 )
 
 # Grab all from external

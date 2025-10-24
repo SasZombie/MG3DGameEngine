@@ -8,13 +8,11 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #pragma GCC diagnostic ignored "-Wshadow"
 
-
 #include <glm/glm.hpp>
 
 #pragma GCC diagnostic pop
 
 #include "SceneNode.hpp"
-#include "Frustum.hpp"
 
 namespace sas
 {
@@ -42,7 +40,6 @@ class Camera : public sas::SceneNode
 
 	public:
 
-		Frustum frust;
 		Camera() noexcept;
 		Camera(const glm::vec3& cameraPosition) noexcept;
 		Camera(const glm::vec3& cameraPosition, const glm::vec3& cameraViewDirection, const glm::vec3& cameraUp) noexcept;

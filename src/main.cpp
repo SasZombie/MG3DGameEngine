@@ -16,7 +16,7 @@
 
 #pragma GCC diagnostic pop
 
-#include "Asset.hpp"
+#include "AssetManager.hpp"
 #include "OctreeNode.hpp"
 #include "CollisionObjects.hpp"
 #include "meshLoaderObj.hpp"
@@ -42,9 +42,6 @@ glm::vec3 keyPosition(322.f, -20.f, 404.f);
 constexpr size_t winWidth = 1920, winHeight = 1080;
 
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
-// sas::OctreeNode collisionOctree({0, 0, 0}, {100, 100, 100});
-sas::OctreeNode cullingOctree({0, 0, 0}, {100, 100, 100});
-
 bool showHitBoxes = true;
 
 Window *window;
@@ -57,33 +54,58 @@ int main(int argc, char **argv)
 
     float lastFrame = 0.f;
 
-    Shader shader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
-    Shader sunShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
+    // Shader shader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
+    // Shader sunShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
 
-    // const auto &textures1 = getDefaultTexture("Resources/Textures/City.bmp");
-    const auto &textures2 = getDefaultTexture("Resources/Textures/test.bmp");
-    // const auto &textures3 = getDefaultTexture("Resources/Textures/gate_diffuse.bmp");
-    const auto &textures4 = getDefaultTexture("Resources/Textures/brickwall_4.bmp");
-    const auto &textures5 = getDefaultTexture("Resources/Textures/Skybox.bmp");
+    // // const auto &textures1 = getDefaultTexture("Resources/Textures/City.bmp");
+    // const auto &textures2 = getDefaultTexture("Resources/Textures/test.bmp");
+    // // const auto &textures3 = getDefaultTexture("Resources/Textures/gate_diffuse.bmp");
+    // const auto &textures4 = getDefaultTexture("Resources/Textures/brickwall_4.bmp");
+    // const auto &textures5 = getDefaultTexture("Resources/Textures/Skybox.bmp");
 
-    Mesh sun = loadObj("Resources/Models/sphere.obj");
-    Mesh cube = loadObj("Resources/Models/CubFata.obj", textures2);
-    Mesh key = loadObj("Resources/Models/21929_Key_v1.obj", textures2);
-    Mesh skyBox = loadObj("Resources/Models/caldare.obj", textures5);
-    Mesh HitBox = loadObj("Resources/Models/HitBox.obj", textures4);
+    
 
-    Mesh fullCube = loadObj("Resources/Models/cube.obj");
+    // Mesh sun = loadObj("Resources/Models/sphere.obj");
+    // Mesh cube = loadObj("Resources/Models/CubFata.obj", textures2);
+    // Mesh key = loadObj("Resources/Models/21929_Key_v1.obj", textures2);
+    // Mesh skyBox = loadObj("Resources/Models/caldare.obj", textures5);
+    // Mesh HitBox = loadObj("Resources/Models/HitBox.obj", textures4);
 
-    std::shared_ptr<sas::Asset> FullCubeAsset = std::make_shared<sas::Asset>(shader, fullCube, window);
+    // Mesh fullCube = loadObj("Resources/Models/cube.obj");
 
-    std::shared_ptr<sas::Asset> SunAsset = std::make_shared<sas::Asset>(sunShader, sun, window);
-    std::shared_ptr<sas::Asset> SphereAsset = std::make_shared<sas::Asset>(shader, HitBox, window);
-    std::shared_ptr<sas::Asset> SkyBoxAsset = std::make_shared<sas::Asset>(shader, skyBox, window);
-    std::shared_ptr<sas::Asset> CubeAsset = std::make_shared<sas::Asset>(shader, cube, window);
-    std::shared_ptr<sas::Asset> CubeAsset2 = std::make_shared<sas::Asset>(shader, cube, window);
-    std::shared_ptr<sas::Asset> CubeAsset3 = std::make_shared<sas::Asset>(shader, cube, window);
-    std::shared_ptr<sas::Asset> CamerasKey = std::make_shared<sas::Asset>(shader, key, window);
-    std::shared_ptr<sas::Asset> KeyAsset1 = std::make_shared<sas::Asset>(shader, key, window);
+    // std::shared_ptr<sas::Asset> FullCubeAsset = std::make_shared<sas::Asset>(shader, fullCube, window);
+
+    // std::shared_ptr<sas::Asset> SunAsset = std::make_shared<sas::Asset>(sunShader, sun, window);
+    // std::shared_ptr<sas::Asset> SphereAsset = std::make_shared<sas::Asset>(shader, HitBox, window);
+    // std::shared_ptr<sas::Asset> SkyBoxAsset = std::make_shared<sas::Asset>(shader, skyBox, window);
+    // std::shared_ptr<sas::Asset> CubeAsset = std::make_shared<sas::Asset>(shader, cube, window);
+    // std::shared_ptr<sas::Asset> CubeAsset2 = std::make_shared<sas::Asset>(shader, cube, window);
+    // std::shared_ptr<sas::Asset> CubeAsset3 = std::make_shared<sas::Asset>(shader, cube, window);
+    // std::shared_ptr<sas::Asset> CamerasKey = std::make_shared<sas::Asset>(shader, key, window);
+    // std::shared_ptr<sas::Asset> KeyAsset1 = std::make_shared<sas::Asset>(shader, key, window);
+
+    sas::AssetManager manager;
+    auto shader = manager.loadShader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
+    auto sunShader = manager.loadShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
+
+    auto goldenTexture = manager.loadTexture("Resources/Textures/test.bmp");
+    auto skyBoxTexture = manager.loadTexture("Resources/Textures/Skybox.bmp");
+
+    auto cubeMesh = manager.loadMesh("Resources/Models/CubFata.obj", goldenTexture);
+    auto keyMesh = manager.loadMesh("Resources/Models/21929_Key_v1.obj", goldenTexture);
+    auto skyBoxMesh = manager.loadMesh("Resources/Models/caldare.obj", skyBoxTexture);
+
+    auto CubeAsset = manager.createAsset(shader, cubeMesh, window);
+    auto CubeAsset2 = manager.createAsset(shader, cubeMesh, window);
+    auto CubeAsset3 = manager.createAsset(shader, cubeMesh, window);
+
+
+    auto KeyAsset = manager.createAsset(shader, keyMesh, window);
+    auto KeyAsset1 = manager.createAsset(shader, keyMesh, window);
+    auto CamerasKey = manager.createAsset(shader, keyMesh, window);
+    
+    auto SkyBoxAsset = manager.createAsset(shader, skyBoxMesh, window);
+
 
     float scaleMax = 1000.f;
     sas::CollisionObject *CubeCollisionObject = new sas::AABB;
@@ -94,8 +116,6 @@ int main(int argc, char **argv)
     CubeAsset2->addCollisionObject(Cube2CollisonObject);
     CubeAsset3->addCollisionObject(Cube3CollisonObject);
 
-    glfwSetCursorPosCallback(window->getWindow(), mouse_callback);
-    glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
 
     glm::vec3 lightColor = glm::vec3(1.f);
     glm::vec3 lightPos = glm::vec3(10.f, 0.f, 0.f);
@@ -104,10 +124,6 @@ int main(int argc, char **argv)
     KeyAsset1->translate({60.f, 0.f, 0.f});
     KeyAsset1->rotate({0.f, 0.f, 90.f});
 
-    SunAsset->translate(lightPos);
-    float scale = 1.f;
-    SunAsset->scale({scale, scale, scale});
-
     float scaleSky = 100.f;
     SkyBoxAsset->translate({0.f, 0.f, 0.f});
     SkyBoxAsset->scale({scaleSky, scaleSky, scaleSky});
@@ -115,7 +131,7 @@ int main(int argc, char **argv)
 
     ge.addSceneNode(root, camera);
 
-    // ge.addSceneNode(camera, CamerasKey);
+    ge.addSceneNode(camera, CamerasKey);
 
     ge.addSkybox(SkyBoxAsset);
 
@@ -131,7 +147,7 @@ int main(int argc, char **argv)
     ge.addSceneNode(root, CubeAsset3);
 
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
-    // ge.addSceneNode(root, KeyAsset1);
+    ge.addSceneNode(root, KeyAsset1);
 
     float rotation = 0;
     int negative = 1;
@@ -166,10 +182,9 @@ int main(int argc, char **argv)
                                 self.localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
                             });
 
-    cullingOctree.insert(CubeAsset.get());
-    cullingOctree.insert(CubeAsset2.get());
-    cullingOctree.insert(CubeAsset3.get());
 
+    glfwSetCursorPosCallback(window->getWindow(), mouse_callback);
+    glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
 
     while (!glfwWindowShouldClose(window->getWindow()))
     {
@@ -184,9 +199,9 @@ int main(int argc, char **argv)
 
         glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-        glUniform3f(glGetUniformLocation(shader.getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
-        glUniform3f(glGetUniformLocation(shader.getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-        glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
+        glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
+        glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(glGetUniformLocation(shader.get()->getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
 
         ge.uppdate(camera.get());
         // std::vector<sas::Asset*> results;

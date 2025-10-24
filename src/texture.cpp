@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <fstream>
 
-GLuint loadBMP(const char *imagepath)
+GLuint loadBMP(const char *imagepath) noexcept
 {
 
 	std::cout << "Reading image " << imagepath << '\n';
@@ -92,7 +92,7 @@ GLuint loadBMP(const char *imagepath)
 	return textureID;
 }
 
-std::vector<Texture> getDefaultTexture(const char *imagepath)
+std::vector<Texture> getDefaultTexture(const char *imagepath) noexcept
 {
 	size_t tex = loadBMP(imagepath);
 

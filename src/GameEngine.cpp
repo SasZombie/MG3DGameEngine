@@ -21,6 +21,15 @@ void sas::GameEngine::addSceneNode(SceneSharedNode root, std::shared_ptr<Asset> 
     }
 }
 
+void sas::GameEngine::addSceneNode(std::shared_ptr<Camera> camera, std::shared_ptr<Asset> asset) noexcept
+{
+    camera->addNode(asset);
+    if (asset->hasCollisionObject())
+    {
+        collisionOctree.insert(asset.get());
+    }
+}
+
 void sas::GameEngine::addSkybox(std::shared_ptr<Asset> asset) noexcept
 {
     skybox = asset.get();

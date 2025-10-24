@@ -30,22 +30,26 @@ namespace sas
     public:
         GameEngine() noexcept;
 
-        void addSceneNode(SceneSharedNode root, std::shared_ptr<Asset> asset) noexcept;
-
+        //Skybox is special Asset, no root
         void addSkybox(std::shared_ptr<Asset> asset) noexcept;
 
-        void addSceneNode(SceneSharedNode root, std::shared_ptr<Camera> camera) noexcept;
-
+        //Non assets go here(UI, timers(?), so on)
         void addSceneNode(SceneSharedNode root, SceneSharedNode node) noexcept;
+        //Root to asset
+        void addSceneNode(SceneSharedNode root, std::shared_ptr<Asset> asset) noexcept;
+        //Attaching camera is special
+        void addSceneNode(SceneSharedNode root, std::shared_ptr<Camera> camera) noexcept;
+        //Things attached to cameras are not added in a culling Tree
+        void addSceneNode(std::shared_ptr<Camera> camera, std::shared_ptr<Asset> asset) noexcept;
 
-        SceneSharedNode getRoot() const noexcept;
 
-        // void checkCollision() noexcept;
-
+        
         void uppdate(const Camera* camera) noexcept;
-
+        
+        SceneSharedNode getRoot() const noexcept;
         Window* getWindow() noexcept;
 
+        //TODO
         void mainLoop(const Camera* camera) noexcept;
 
         ~GameEngine() noexcept = default;

@@ -16,7 +16,7 @@
 #include <sstream>
 #include "meshLoaderObj.hpp"
 
-static float _stringToFloat(const std::string &source)
+static float _stringToFloat(const std::string &source) noexcept
 {
 	std::stringstream ss(source.c_str());
 	float result;
@@ -24,7 +24,7 @@ static float _stringToFloat(const std::string &source)
 	return result;
 }
 
-[[maybe_unused]]static unsigned int _stringToUint(const std::string &source)
+[[maybe_unused]]static unsigned int _stringToUint(const std::string &source) noexcept
 {
 	std::stringstream ss(source.c_str());
 	unsigned int result;
@@ -32,7 +32,7 @@ static float _stringToFloat(const std::string &source)
 	return result;
 }
 
-static int _stringToInt(const std::string &source)
+static int _stringToInt(const std::string &source) noexcept
 {
 	std::stringstream ss(source.c_str());
 	int result;
@@ -40,7 +40,7 @@ static int _stringToInt(const std::string &source)
 	return result;
 }
 
-static void _stringTokenize(const std::string &source, std::vector<std::string> &tokens)
+static void _stringTokenize(const std::string &source, std::vector<std::string> &tokens) noexcept
 {
 	tokens.clear();
 	std::string aux = source;
@@ -57,7 +57,7 @@ static void _stringTokenize(const std::string &source, std::vector<std::string> 
 	}
 }
 
-static void _faceTokenize(const std::string &source, std::vector<std::string> &tokens)
+static void _faceTokenize(const std::string &source, std::vector<std::string> &tokens) noexcept
 {
 	std::string aux = source;
 	for (unsigned int i = 0; i < aux.size(); i++)
@@ -66,7 +66,7 @@ static void _faceTokenize(const std::string &source, std::vector<std::string> &t
 	_stringTokenize(aux, tokens);
 }
 
-Mesh loadObj(const std::string &filename)
+Mesh loadObj(const std::string &filename) noexcept
 {
 	std::vector<Vertex> vertices;
 	std::vector<int> indices;
@@ -235,7 +235,7 @@ Mesh loadObj(const std::string &filename)
 	return {vertices, indices};
 }
 
-Mesh loadObj(const std::string &filename, const std::vector<Texture> &textures)
+Mesh loadObj(const std::string &filename, const std::vector<Texture> &textures) noexcept
 {
 	Mesh mesh = loadObj(filename);
 	mesh.setTextures(textures);

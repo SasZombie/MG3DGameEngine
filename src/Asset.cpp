@@ -10,7 +10,6 @@
 
 #pragma GCC diagnostic pop
 
-#include "Frustum.hpp"
 
 sas::Asset::Asset(Window *nwindow) noexcept
     : window(nwindow)
@@ -83,7 +82,7 @@ void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
 
 void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 {
-    // drawAttachedToCamera(camera);
+    drawAttachedToCamera(camera);
 
     if (collisionObject)
     {
