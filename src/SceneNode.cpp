@@ -1,5 +1,6 @@
 #include "SceneNode.hpp"
 #include "Globals.hpp"
+#include <fstream>
 
 sas::SceneNode::SceneNode(const glm::vec3 &position) noexcept
 {
@@ -45,10 +46,12 @@ void sas::SceneNode::uppdateAttachedToCamera(const Camera *camera) noexcept
     }
 }
 
-
-void sas::SceneNode::triggerCollision(const std::vector<SceneNode *> &others) noexcept
+void sas::SceneNode::save(std::ofstream &out) noexcept
 {
+    out << "Local Transform " << localTransform << " world trransform " << worldTransform << '\n';
 
+    for (auto &child : components)
+        child->save(out);
 }
 
 void sas::SceneNode::uppdateWorldTransform(const Transform &parentWorldTransform) noexcept

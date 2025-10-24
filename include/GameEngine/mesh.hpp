@@ -17,6 +17,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <filesystem>
 #include "shader.hpp"
 
 struct Vertex
@@ -59,17 +60,21 @@ class Mesh
 public:
 	std::vector<Vertex> vertices;
 	std::vector<int> indices;
+	std::filesystem::path path;
 	std::shared_ptr<std::vector<Texture>> textures;
 
 	unsigned int vao, vbo, ibo;
 
 	Mesh() noexcept = default;
 	Mesh(std::vector<Vertex> vertices, std::vector<int> indices, std::shared_ptr<std::vector<Texture>> textures) noexcept;
-	Mesh(std::vector<Vertex> vertices, std::vector<int> indices) noexcept;
+	Mesh(std::vector<Vertex> vertices, std::vector<int> indices, const std::filesystem::path& pth) noexcept;
 	~Mesh() noexcept = default;
 
 	void setTextures(std::shared_ptr<std::vector<Texture>> textures) noexcept;
 	void draw(const Shader& shader) noexcept;
+
+	friend std::ostream& operator<<(std::ostream& os, const Mesh& mesh);
+
 private:	
 	void setup2() noexcept;
 	void setup() noexcept;

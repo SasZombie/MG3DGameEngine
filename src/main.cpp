@@ -54,56 +54,9 @@ int main(int argc, char **argv)
 
     float lastFrame = 0.f;
 
-    // Shader shader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
-    // Shader sunShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
-
-    // // const auto &textures1 = getDefaultTexture("Resources/Textures/City.bmp");
-    // const auto &textures2 = getDefaultTexture("Resources/Textures/test.bmp");
-    // // const auto &textures3 = getDefaultTexture("Resources/Textures/gate_diffuse.bmp");
-    // const auto &textures4 = getDefaultTexture("Resources/Textures/brickwall_4.bmp");
-    // const auto &textures5 = getDefaultTexture("Resources/Textures/Skybox.bmp");
-
-    
-
-    // Mesh sun = loadObj("Resources/Models/sphere.obj");
-    // Mesh cube = loadObj("Resources/Models/CubFata.obj", textures2);
-    // Mesh key = loadObj("Resources/Models/21929_Key_v1.obj", textures2);
-    // Mesh skyBox = loadObj("Resources/Models/caldare.obj", textures5);
-    // Mesh HitBox = loadObj("Resources/Models/HitBox.obj", textures4);
-
-    // Mesh fullCube = loadObj("Resources/Models/cube.obj");
-
-    // std::shared_ptr<sas::Asset> FullCubeAsset = std::make_shared<sas::Asset>(shader, fullCube, window);
-
-    // std::shared_ptr<sas::Asset> SunAsset = std::make_shared<sas::Asset>(sunShader, sun, window);
-    // std::shared_ptr<sas::Asset> SphereAsset = std::make_shared<sas::Asset>(shader, HitBox, window);
-    // std::shared_ptr<sas::Asset> SkyBoxAsset = std::make_shared<sas::Asset>(shader, skyBox, window);
-    // std::shared_ptr<sas::Asset> CubeAsset = std::make_shared<sas::Asset>(shader, cube, window);
-    // std::shared_ptr<sas::Asset> CubeAsset2 = std::make_shared<sas::Asset>(shader, cube, window);
-    // std::shared_ptr<sas::Asset> CubeAsset3 = std::make_shared<sas::Asset>(shader, cube, window);
-    // std::shared_ptr<sas::Asset> CamerasKey = std::make_shared<sas::Asset>(shader, key, window);
-    // std::shared_ptr<sas::Asset> KeyAsset1 = std::make_shared<sas::Asset>(shader, key, window);
-
     sas::AssetManager manager;
     auto shader = manager.loadShader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
     auto sunShader = manager.loadShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
-
-    // auto goldenTexture = manager.loadTexture("Resources/Textures/test.bmp");
-    // auto skyBoxTexture = manager.loadTexture("Resources/Textures/Skybox.bmp");
-
-    // auto cubeMesh = manager.loadMesh("Resources/Models/CubFata.obj", goldenTexture);
-    // auto keyMesh = manager.loadMesh("Resources/Models/21929_Key_v1.obj", goldenTexture);
-    // auto skyBoxMesh = manager.loadMesh("Resources/Models/caldare.obj", skyBoxTexture);
-
-    // auto CubeAsset = manager.createAsset(shader, cubeMesh, window);
-    // auto CubeAsset2 = manager.createAsset(shader, cubeMesh, window);
-    // auto CubeAsset3 = manager.createAsset(shader, cubeMesh, window);
-
-    // auto KeyAsset = manager.createAsset(shader, keyMesh, window);
-    // auto KeyAsset1 = manager.createAsset(shader, keyMesh, window);
-    // auto CamerasKey = manager.createAsset(shader, keyMesh, window);
-    
-    // auto SkyBoxAsset = manager.createAsset(shader, skyBoxMesh, window);
 
     auto CubeAsset = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
     auto CubeAsset2 = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
@@ -143,8 +96,6 @@ int main(int argc, char **argv)
 
     ge.addSkybox(SkyBoxAsset);
 
-    glEnable(GL_DEPTH_TEST);
-
     CubeAsset->translate({-5, 0, -5});
     ge.addSceneNode(root, CubeAsset);
 
@@ -159,12 +110,6 @@ int main(int argc, char **argv)
 
     float rotation = 0;
     int negative = 1;
-
-    float viewRange = 1000.f;
-    float fovRadians = glm::radians(360.f);
-
-    float aspect = static_cast<float>(winWidth) / static_cast<float>(winHeight);
-
 
     KeyAsset1->addCallback([&window = KeyAsset1]()
                            {
@@ -191,9 +136,14 @@ int main(int argc, char **argv)
                             });
 
 
+    glEnable(GL_DEPTH_TEST);
+
     glfwSetCursorPosCallback(window->getWindow(), mouse_callback);
     glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
-
+    glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    
+    ge.saveScene("Aici.path");
+    
     while (!glfwWindowShouldClose(window->getWindow()))
     {
         float currentFrame = glfwGetTime();
@@ -205,18 +155,11 @@ int main(int argc, char **argv)
         processKeyboardInput();
         window->clear();
 
-        glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
         glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
         glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(glGetUniformLocation(shader.get()->getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
 
         ge.uppdate(camera.get());
-        // std::vector<sas::Asset*> results;
-        // cullingOctree.querryView(camera.get(), results);
-
-        // std::cout << results.size() << '\n';
-
 
         window->update();
     }

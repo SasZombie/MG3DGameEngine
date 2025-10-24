@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath)
+	: vertP(vertexPath), fragP(fragmentPath)
 {
 	std::ifstream vertexShaderFile(vertexPath);
 	std::ifstream fragmentShaderFile(fragmentPath);
@@ -99,4 +100,11 @@ void Shader::use() const noexcept
 int Shader::getId() const noexcept
 {
 	return id;
+}
+
+std::ostream &operator<<(std::ostream &os, const Shader &shader)
+{
+	os << "Shader" << shader.vertP << ' ' << shader.fragP << '\n';
+
+	return os;
 }

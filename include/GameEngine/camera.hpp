@@ -23,6 +23,12 @@ namespace sas
 		float fov = 90.f;
 		float aspect = 16.f/9.f;
 		float viewRange = 1000.f;
+
+		friend std::ostream& operator<<(std::ostream& os, const CameraSettings& t)
+		{
+			os << "Camera settings " << t.fov << ' ' << t.aspect << ' ' << t.viewRange << '\n';
+			return os;
+		}
 	};
 }
 
@@ -79,7 +85,11 @@ class Camera : public sas::SceneNode
 
 		sas::CameraSettings getCameraSettings() const noexcept;
 		void uppdate(const Camera* camera) noexcept override;
+		void save(std::ofstream &out) noexcept override;
+
+
 		float getCameraHeight() const noexcept;
+
 
 		
 		friend std::ostream& operator<<(std::ostream& os, const Camera& obj);

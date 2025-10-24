@@ -30,46 +30,6 @@ void sas::GameEngine::addSceneNode(std::shared_ptr<Camera> camera, std::shared_p
     }
 }
 
-[[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::string &vertex, const std::string &frag, const std::string &meshPath, const std::optional<std::string> &texturePath)
-{
-    auto shader = manager.loadShader(vertex, frag);
-    std::shared_ptr<Mesh> mesh;
-
-    if (texturePath)
-    {
-        auto tex = manager.loadTexture(*texturePath);
-        mesh = manager.loadMesh(meshPath, tex);
-    }
-    else
-    {
-        mesh = manager.loadMesh(meshPath);
-    }
-
-    return manager.createAsset(shader, mesh, &window);
-}
-
-[[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::shared_ptr<Shader>& shader, const std::string &meshPath, const std::optional<std::string> &texturePath) noexcept
-{
-    std::shared_ptr<Mesh> mesh;
-
-    if (texturePath)
-    {
-        auto tex = manager.loadTexture(*texturePath);
-        mesh = manager.loadMesh(meshPath, tex);
-    }
-    else
-    {
-        mesh = manager.loadMesh(meshPath);
-    }
-
-    return manager.createAsset(shader, mesh, &window);
-}
-
-// [[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::string &) noexcept
-// {
-//     std::make_shared<Asset>()
-// }
-
 void sas::GameEngine::addSkybox(std::shared_ptr<Asset> asset) noexcept
 {
     skybox = asset.get();
@@ -124,6 +84,48 @@ void sas::GameEngine::uppdate(const Camera *camera) noexcept
     drawingResults.clear();
 }
 
+void sas::GameEngine::saveScene(const std::filesystem::path &path) noexcept
+{
+    std::ofstream out(path);
+    sceneNodes->save(out);
+
+    out.close();
+}
+
+[[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::string &vertex, const std::string &frag, const std::string &meshPath, const std::optional<std::string> &texturePath)
+{
+    auto shader = manager.loadShader(vertex, frag);
+    std::shared_ptr<Mesh> mesh;
+
+    if (texturePath)
+    {
+        auto tex = manager.loadTexture(*texturePath);
+        mesh = manager.loadMesh(meshPath, tex);
+    }
+    else
+    {
+        mesh = manager.loadMesh(meshPath);
+    }
+
+    return manager.createAsset(shader, mesh, &window);
+}
+
+[[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::shared_ptr<Shader>& shader, const std::string &meshPath, const std::optional<std::string> &texturePath) noexcept
+{
+    std::shared_ptr<Mesh> mesh;
+
+    if (texturePath)
+    {
+        auto tex = manager.loadTexture(*texturePath);
+        mesh = manager.loadMesh(meshPath, tex);
+    }
+    else
+    {
+        mesh = manager.loadMesh(meshPath);
+    }
+
+    return manager.createAsset(shader, mesh, &window);
+}
 Window *sas::GameEngine::getWindow() noexcept
 {
     return &window;

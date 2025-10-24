@@ -57,7 +57,8 @@ namespace sas
 
         void uppdate(const Camera *camera) noexcept override;
         void uppdateAttachedToCamera(const Camera *camera) noexcept override;
-        
+        void save(std::ofstream& out) noexcept override;
+
 
         void addCollisionObject(CollisionObject *colObj) noexcept;
         bool hasCollisionObject() const noexcept;

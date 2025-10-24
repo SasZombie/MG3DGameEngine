@@ -232,7 +232,7 @@ Mesh loadObj(const std::string &filename) noexcept
 
 	std::cout << "Loading:  " << filename << '\n';
 
-	return {vertices, indices};
+	return {vertices, indices, filename};
 }
 
 Mesh loadObj(const std::string &filename, std::shared_ptr<std::vector<Texture>> textures) noexcept

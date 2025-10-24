@@ -3,8 +3,8 @@
 
 #include <GL/glew.h>
 
-Mesh::Mesh(std::vector<Vertex> nVertices, std::vector<int> nIndices) noexcept
-	: vertices(nVertices), indices(nIndices)
+Mesh::Mesh(std::vector<Vertex> nVertices, std::vector<int> nIndices, const std::filesystem::path& pth) noexcept
+	: vertices(nVertices), indices(nIndices), path(pth)
 {
 	setup2();
 }
@@ -102,4 +102,16 @@ void Mesh::setTextures(std::shared_ptr<std::vector<Texture>> nTextures) noexcept
 {
 	this->textures = nTextures;
 	setup();
+}
+
+std::ostream &operator<<(std::ostream &os, const Mesh &mesh)
+{
+	os << "mesh " << mesh.path << " texture ";
+
+	for(const auto& texture : *mesh.textures)
+	{
+		os << "id = " << texture.id << " name = " << texture.type << '\n';
+	}
+	
+	return os;
 }

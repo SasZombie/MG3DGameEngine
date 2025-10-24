@@ -92,6 +92,13 @@ void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
     SceneNode::uppdateAttachedToCamera(camera);
 }
 
+void sas::Asset::save(std::ofstream &out) noexcept
+{
+    out << shader << mesh;
+
+    SceneNode::save(out);
+}
+
 void sas::Asset::addCollisionObject(CollisionObject *colObj) noexcept
 {
     collisionObject = colObj;

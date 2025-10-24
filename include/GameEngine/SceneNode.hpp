@@ -35,10 +35,12 @@ namespace sas
         virtual void uppdate(const Camera* camera) noexcept;
         virtual void uppdateAttachedToCamera(const Camera* camera) noexcept;
 
-        virtual void triggerCollision(const std::vector<SceneNode*>& others) noexcept;
+        virtual void save(std::ofstream &out) noexcept;
 
         void uppdateWorldTransform(const Transform& parentWorldTransform) noexcept;
         void uppdateWorldTransformCamera(const Transform& parentWorldTransform) noexcept;
+
+
 
         virtual ~SceneNode() = default;
     };   

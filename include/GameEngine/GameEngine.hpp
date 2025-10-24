@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-
+#include <filesystem>
 #include "SceneNode.hpp"
 #include "OctreeNode.hpp"
 #include "window.hpp"
@@ -44,16 +44,18 @@ namespace sas
         void addSceneNode(std::shared_ptr<Camera> camera, std::shared_ptr<Asset> asset) noexcept;
 
         [[nodiscard]] std::shared_ptr<Asset> addAsset(const std::string &vertex, const std::string &frag, const std::string &meshPath, const std::optional<std::string> &texturePath = std::nullopt);
-        [[nodiscard]] std::shared_ptr<Asset> addAsset(const std::shared_ptr<Shader>& shader, const std::string &meshPath, const std::optional<std::string>& texturePath = std::nullopt) noexcept;
-        // [[nodiscard]] std::shared_ptr<Asset> addAsset(const std::string &) noexcept;
+        [[nodiscard]] std::shared_ptr<Asset> addAsset(const std::shared_ptr<Shader> &shader, const std::string &meshPath, const std::optional<std::string> &texturePath = std::nullopt) noexcept;
 
         void uppdate(const Camera *camera) noexcept;
 
         SceneSharedNode getRoot() const noexcept;
         Window *getWindow() noexcept;
 
-        // TODO
+        // TODO: this requires a lot more work
+        // Not sure it will be done
         void mainLoop(const Camera *camera) noexcept;
+
+        void saveScene(const std::filesystem::path& path) noexcept;
 
         ~GameEngine() noexcept = default;
     };

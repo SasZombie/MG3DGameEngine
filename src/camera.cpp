@@ -95,6 +95,13 @@ void Camera::uppdate(const Camera *camera) noexcept
     SceneNode::uppdateAttachedToCamera(camera);
 }
 
+void Camera::save(std::ofstream &out) noexcept
+{
+    out << cameraSettings << *this << '\n';
+
+    SceneNode::save(out);
+}
+
 float Camera::getCameraHeight() const noexcept
 {
     return cameraHeight;
