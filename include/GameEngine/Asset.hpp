@@ -26,8 +26,8 @@ namespace sas
         glm::mat4 ProjectionMatrix = glm::mat4(1.f);
         glm::mat4 MVP = glm::mat4(1.f);
 
-        Shader shader;
-        std::optional<Mesh> mesh;
+        std::shared_ptr<Shader> shader;
+        std::shared_ptr<Mesh> mesh;
         CollisionObject* collisionObject = nullptr;
         Window *window;
         std::vector<Callback> callbacks;
@@ -38,9 +38,9 @@ namespace sas
         Asset() = default;
         // Not owining window
         Asset(Window *window) noexcept;
-        Asset(const Mesh &mesh, Window *window) noexcept;
-        Asset(const Shader &shader, const Mesh &mesh, Window *window) noexcept;
-        void addMesh(const Mesh &mesh) noexcept;
+        Asset(std::shared_ptr<Mesh> mesh, Window *window) noexcept;
+        Asset(std::shared_ptr<Shader> shader, std::shared_ptr<Mesh> mesh, Window *window) noexcept;
+        void addMesh(std::shared_ptr<Mesh> mesh) noexcept;
         void basicPVM(const Camera *camera) noexcept;
         void draw(const Camera *camera) noexcept;
         void drawAttachedToCamera(const Camera *camera) noexcept;
@@ -48,7 +48,7 @@ namespace sas
         void translate(const glm::vec3 &newPosition) noexcept;
         void scale(const glm::vec3 &newScaleVector) noexcept;
         void rotate(const glm::vec3 &axisVector) noexcept;
-        void setShader(const Shader &shader) noexcept;
+        void setShader(std::shared_ptr<Shader> shader) noexcept;
         void setShaderUniformID(int id) noexcept;
 
         void addCallback(Callback cb) noexcept;

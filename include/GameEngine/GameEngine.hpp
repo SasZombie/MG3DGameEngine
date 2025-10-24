@@ -5,6 +5,7 @@
 #include "SceneNode.hpp"
 #include "OctreeNode.hpp"
 #include "window.hpp"
+#include "AssetManager.hpp"
 
 namespace sas
 {
@@ -12,47 +13,49 @@ namespace sas
 
     class GameEngine
     {
-    // private:
+        // private:
     public:
         Window window;
-        
-        //Culling trees always present
+        // Culling trees always present
         OctreeNode cullingOctree;
-        //Collision Trees not always present
-        //But very lightweight if empty
+        // Collision Trees not always present
+        // But very lightweight if empty
         OctreeNode collisionOctree;
         SceneSharedNode sceneNodes;
 
-        Asset* skybox;
+        Asset *skybox;
+        std::vector<Asset *> drawingResults;
 
-        std::vector<Asset*> drawingResults;
+        sas::AssetManager manager;
 
     public:
         GameEngine() noexcept;
 
-        //Skybox is special Asset, no root
+        // Skybox is special Asset, no root
         void addSkybox(std::shared_ptr<Asset> asset) noexcept;
 
-        //Non assets go here(UI, timers(?), so on)
+        // Non assets go here(UI, timers(?), so on)
         void addSceneNode(SceneSharedNode root, SceneSharedNode node) noexcept;
-        //Root to asset
+        // Root to asset
         void addSceneNode(SceneSharedNode root, std::shared_ptr<Asset> asset) noexcept;
-        //Attaching camera is special
+        // Attaching camera is special
         void addSceneNode(SceneSharedNode root, std::shared_ptr<Camera> camera) noexcept;
-        //Things attached to cameras are not added in a culling Tree
+        // Things attached to cameras are not added in a culling Tree
         void addSceneNode(std::shared_ptr<Camera> camera, std::shared_ptr<Asset> asset) noexcept;
 
+        [[nodiscard]] std::shared_ptr<Asset> addAsset(const std::string &vertex, const std::string &frag, const std::string &meshPath, const std::optional<std::string> &texturePath = std::nullopt);
+        [[nodiscard]] std::shared_ptr<Asset> addAsset(const std::shared_ptr<Shader>& shader, const std::string &meshPath, const std::optional<std::string>& texturePath = std::nullopt) noexcept;
+        // [[nodiscard]] std::shared_ptr<Asset> addAsset(const std::string &) noexcept;
 
-        
-        void uppdate(const Camera* camera) noexcept;
-        
+        void uppdate(const Camera *camera) noexcept;
+
         SceneSharedNode getRoot() const noexcept;
-        Window* getWindow() noexcept;
+        Window *getWindow() noexcept;
 
-        //TODO
-        void mainLoop(const Camera* camera) noexcept;
+        // TODO
+        void mainLoop(const Camera *camera) noexcept;
 
         ~GameEngine() noexcept = default;
     };
-    
+
 } // namespace sas

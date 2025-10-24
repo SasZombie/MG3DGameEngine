@@ -88,24 +88,32 @@ int main(int argc, char **argv)
     auto shader = manager.loadShader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
     auto sunShader = manager.loadShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
 
-    auto goldenTexture = manager.loadTexture("Resources/Textures/test.bmp");
-    auto skyBoxTexture = manager.loadTexture("Resources/Textures/Skybox.bmp");
+    // auto goldenTexture = manager.loadTexture("Resources/Textures/test.bmp");
+    // auto skyBoxTexture = manager.loadTexture("Resources/Textures/Skybox.bmp");
 
-    auto cubeMesh = manager.loadMesh("Resources/Models/CubFata.obj", goldenTexture);
-    auto keyMesh = manager.loadMesh("Resources/Models/21929_Key_v1.obj", goldenTexture);
-    auto skyBoxMesh = manager.loadMesh("Resources/Models/caldare.obj", skyBoxTexture);
+    // auto cubeMesh = manager.loadMesh("Resources/Models/CubFata.obj", goldenTexture);
+    // auto keyMesh = manager.loadMesh("Resources/Models/21929_Key_v1.obj", goldenTexture);
+    // auto skyBoxMesh = manager.loadMesh("Resources/Models/caldare.obj", skyBoxTexture);
 
-    auto CubeAsset = manager.createAsset(shader, cubeMesh, window);
-    auto CubeAsset2 = manager.createAsset(shader, cubeMesh, window);
-    auto CubeAsset3 = manager.createAsset(shader, cubeMesh, window);
+    // auto CubeAsset = manager.createAsset(shader, cubeMesh, window);
+    // auto CubeAsset2 = manager.createAsset(shader, cubeMesh, window);
+    // auto CubeAsset3 = manager.createAsset(shader, cubeMesh, window);
 
-
-    auto KeyAsset = manager.createAsset(shader, keyMesh, window);
-    auto KeyAsset1 = manager.createAsset(shader, keyMesh, window);
-    auto CamerasKey = manager.createAsset(shader, keyMesh, window);
+    // auto KeyAsset = manager.createAsset(shader, keyMesh, window);
+    // auto KeyAsset1 = manager.createAsset(shader, keyMesh, window);
+    // auto CamerasKey = manager.createAsset(shader, keyMesh, window);
     
-    auto SkyBoxAsset = manager.createAsset(shader, skyBoxMesh, window);
+    // auto SkyBoxAsset = manager.createAsset(shader, skyBoxMesh, window);
 
+    auto CubeAsset = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
+    auto CubeAsset2 = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
+    auto CubeAsset3 = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
+    
+    auto KeyAsset = ge.addAsset(shader, "Resources/Models/21929_Key_v1.obj", "Resources/Textures/test.bmp");
+    auto KeyAsset1 = ge.addAsset(shader, "Resources/Models/21929_Key_v1.obj", "Resources/Textures/test.bmp");
+    auto CamerasKey = ge.addAsset(shader, "Resources/Models/21929_Key_v1.obj", "Resources/Textures/test.bmp");
+    
+    auto SkyBoxAsset = ge.addAsset(shader, "Resources/Models/caldare.obj", "Resources/Textures/Skybox.bmp");
 
     float scaleMax = 1000.f;
     sas::CollisionObject *CubeCollisionObject = new sas::AABB;

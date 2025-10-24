@@ -3,7 +3,7 @@
 sas::GameEngine::GameEngine() noexcept
     : window("Game Engine", winWidth, winHeight)
 {
-    //Preallocate some memory 
+    // Preallocate some memory
     drawingResults.reserve(100);
     sceneNodes = std::make_shared<SceneNode>();
 
@@ -29,6 +29,46 @@ void sas::GameEngine::addSceneNode(std::shared_ptr<Camera> camera, std::shared_p
         collisionOctree.insert(asset.get());
     }
 }
+
+[[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::string &vertex, const std::string &frag, const std::string &meshPath, const std::optional<std::string> &texturePath)
+{
+    auto shader = manager.loadShader(vertex, frag);
+    std::shared_ptr<Mesh> mesh;
+
+    if (texturePath)
+    {
+        auto tex = manager.loadTexture(*texturePath);
+        mesh = manager.loadMesh(meshPath, tex);
+    }
+    else
+    {
+        mesh = manager.loadMesh(meshPath);
+    }
+
+    return manager.createAsset(shader, mesh, &window);
+}
+
+[[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::shared_ptr<Shader>& shader, const std::string &meshPath, const std::optional<std::string> &texturePath) noexcept
+{
+    std::shared_ptr<Mesh> mesh;
+
+    if (texturePath)
+    {
+        auto tex = manager.loadTexture(*texturePath);
+        mesh = manager.loadMesh(meshPath, tex);
+    }
+    else
+    {
+        mesh = manager.loadMesh(meshPath);
+    }
+
+    return manager.createAsset(shader, mesh, &window);
+}
+
+// [[nodiscard]] std::shared_ptr<sas::Asset> sas::GameEngine::addAsset(const std::string &) noexcept
+// {
+//     std::make_shared<Asset>()
+// }
 
 void sas::GameEngine::addSkybox(std::shared_ptr<Asset> asset) noexcept
 {
@@ -62,7 +102,7 @@ void sas::GameEngine::uppdate(const Camera *camera) noexcept
 
         skybox->uppdateWorldTransform({});
         skybox->uppdate(camera);
-        //Skybox always visible
+        // Skybox always visible
         skybox->draw(camera);
 
         glDepthMask(GL_TRUE);

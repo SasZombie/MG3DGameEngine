@@ -235,7 +235,7 @@ Mesh loadObj(const std::string &filename) noexcept
 	return {vertices, indices};
 }
 
-Mesh loadObj(const std::string &filename, const std::vector<Texture> &textures) noexcept
+Mesh loadObj(const std::string &filename, std::shared_ptr<std::vector<Texture>> textures) noexcept
 {
 	Mesh mesh = loadObj(filename);
 	mesh.setTextures(textures);

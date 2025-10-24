@@ -16,20 +16,20 @@ sas::Asset::Asset(Window *nwindow) noexcept
 {
 }
 
-sas::Asset::Asset(const Mesh &nmesh, Window *nwindow) noexcept
+sas::Asset::Asset(std::shared_ptr<Mesh> nmesh, Window *nwindow) noexcept
     : mesh(nmesh), window(nwindow)
 
 {
 }
 
-sas::Asset::Asset(const Shader &nshader, const Mesh &nmesh, Window *nwindow) noexcept
+sas::Asset::Asset(std::shared_ptr<Shader> nshader, std::shared_ptr<Mesh> nmesh, Window *nwindow) noexcept
     : shader(nshader), mesh(nmesh), window(nwindow)
 {
-    shader.use();
-    setShaderUniformID(glGetUniformLocation(shader.getId(), "MVP"));
+    shader->use();
+    setShaderUniformID(glGetUniformLocation(shader->getId(), "MVP"));
 }
 
-void sas::Asset::addMesh(const Mesh &nmesh) noexcept
+void sas::Asset::addMesh(std::shared_ptr<Mesh> nmesh) noexcept
 {
     this->mesh = nmesh;
 }
@@ -42,7 +42,7 @@ void sas::Asset::basicPVM(const Camera *camera) noexcept
 
 void sas::Asset::draw(const Camera *camera) noexcept
 {
-    shader.use();
+    shader->use();
 
     basicPVM(camera);
 
@@ -57,12 +57,12 @@ void sas::Asset::draw(const Camera *camera) noexcept
     }
 #endif
 
-    mesh->draw(shader);
+    mesh->draw(*shader);
 }
 
 void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
 {
-    shader.use();
+    shader->use();
 
     MVP = camera->getProjectionMatrix() * localTransform.getModelMatrix();
 
@@ -77,7 +77,7 @@ void sas::Asset::drawAttachedToCamera(const Camera *camera) noexcept
     }
 #endif
 
-    mesh->draw(shader);
+    mesh->draw(*shader);
 }
 
 void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
@@ -147,7 +147,7 @@ void sas::Asset::rotate(const glm::vec3 &axisVector) noexcept
     localTransform.rotation = axisVector;
 }
 
-void sas::Asset::setShader(const Shader &nshader) noexcept
+void sas::Asset::setShader(std::shared_ptr<Shader> nshader) noexcept
 {
     this->shader = nshader;
 }

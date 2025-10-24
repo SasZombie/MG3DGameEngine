@@ -9,7 +9,7 @@ Mesh::Mesh(std::vector<Vertex> nVertices, std::vector<int> nIndices) noexcept
 	setup2();
 }
 
-Mesh::Mesh(std::vector<Vertex> nVertices, std::vector<int> nIndices, std::vector<Texture> nTextures) noexcept
+Mesh::Mesh(std::vector<Vertex> nVertices, std::vector<int> nIndices, std::shared_ptr<std::vector<Texture>> nTextures) noexcept
 	: vertices(nVertices), indices(nIndices), textures(nTextures)
 {
 	setup();
@@ -22,12 +22,17 @@ void Mesh::draw(const Shader& shader) noexcept
 	unsigned int normalNr = 1;
 	unsigned int heightNr = 1;
 
-	for (unsigned int i = 0; i < textures.size(); i++)
+	for (unsigned int i = 0; i < textures->size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i); 
+
+		const auto& textureDeref = (*textures); 
 											
 		std::string number;
-		std::string name = textures[i].type;
+		std::string name = textureDeref[i].type;
+		// std::string name = textures->operator[](i).type;
+		//Ugly ahh sytax, aint doing that^
+
 		if (name == "texture_diffuse")
 			number = std::to_string(diffuseNr++);
 		else if (name == "texture_specular")
@@ -38,7 +43,7 @@ void Mesh::draw(const Shader& shader) noexcept
 			number = std::to_string(heightNr++); 
 
 		glUniform1i(glGetUniformLocation(shader.getId(), (name + number).c_str()), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		glBindTexture(GL_TEXTURE_2D, textureDeref[i].id);
 	}
 
 	glBindVertexArray(vao);
@@ -93,7 +98,7 @@ void Mesh::setup2() noexcept
 	glBindVertexArray(0);
 }
 
-void Mesh::setTextures(const std::vector<Texture>& nTextures) noexcept
+void Mesh::setTextures(std::shared_ptr<std::vector<Texture>> nTextures) noexcept
 {
 	this->textures = nTextures;
 	setup();
