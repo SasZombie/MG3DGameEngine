@@ -41,14 +41,63 @@ glm::vec3 keyPosition(322.f, -20.f, 404.f);
 
 constexpr size_t winWidth = 1920, winHeight = 1080;
 
-std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
+std::shared_ptr<Camera> camera;
 bool showHitBoxes = true;
 
 Window *window;
+
 int main(int argc, char **argv)
 {
     sas::GameEngine ge;
+
     window = ge.getWindow();
+    camera = ge.getCamera();
+    float lastFrame = 0.f;
+
+    glm::vec3 lightColor = glm::vec3(1.f);
+    glm::vec3 lightPos = glm::vec3(10.f, 0.f, 0.f);
+
+    sas::AssetManager manager;
+
+    auto shader = manager.loadShader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
+    auto sunShader = manager.loadShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
+
+    ge.loadScene("Aici.path");
+
+    glEnable(GL_DEPTH_TEST);
+
+    glfwSetCursorPosCallback(window->getWindow(), mouse_callback);
+    glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
+    glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // ge.saveScene("Aici.path");
+
+    while (!glfwWindowShouldClose(window->getWindow()))
+    {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        sas::Globals::instance().setDeltaTime(deltaTime);
+
+        processKeyboardInput();
+        window->clear();
+
+        glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
+        glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(glGetUniformLocation(shader.get()->getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
+
+        ge.uppdate(camera.get());
+
+        window->update();
+    }
+}
+
+int main2(int argc, char **argv)
+{
+    sas::GameEngine ge;
+    window = ge.getWindow();
+    camera = ge.getCamera();
 
     std::shared_ptr<sas::SceneNode> root = ge.getRoot();
 
@@ -61,11 +110,11 @@ int main(int argc, char **argv)
     auto CubeAsset = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
     auto CubeAsset2 = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
     auto CubeAsset3 = ge.addAsset(shader, "Resources/Models/CubFata.obj", "Resources/Textures/test.bmp");
-    
+
     auto KeyAsset = ge.addAsset(shader, "Resources/Models/21929_Key_v1.obj", "Resources/Textures/test.bmp");
     auto KeyAsset1 = ge.addAsset(shader, "Resources/Models/21929_Key_v1.obj", "Resources/Textures/test.bmp");
     auto CamerasKey = ge.addAsset(shader, "Resources/Models/21929_Key_v1.obj", "Resources/Textures/test.bmp");
-    
+
     auto SkyBoxAsset = ge.addAsset(shader, "Resources/Models/caldare.obj", "Resources/Textures/Skybox.bmp");
 
     float scaleMax = 1000.f;
@@ -76,7 +125,6 @@ int main(int argc, char **argv)
     CubeAsset->addCollisionObject(CubeCollisionObject);
     CubeAsset2->addCollisionObject(Cube2CollisonObject);
     CubeAsset3->addCollisionObject(Cube3CollisonObject);
-
 
     glm::vec3 lightColor = glm::vec3(1.f);
     glm::vec3 lightPos = glm::vec3(10.f, 0.f, 0.f);
@@ -118,13 +166,11 @@ int main(int argc, char **argv)
                                if (window->localTransform.rotation.z >= M_PI * 2.f)
                                    window->localTransform.rotation.z = 0.f; });
 
-
     CubeAsset3->addCallback([&window = CubeAsset3, &negative]()
                             {
                                 float deltaX = negative * 2.f * sas::Globals::instance().getDeltaTime();
 
-                                window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-                            });
+                                window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f}; });
 
     CubeAsset3->onCollision([&negative](sas::Asset &self, sas::Asset &other)
                             {
@@ -132,18 +178,17 @@ int main(int argc, char **argv)
 
                                 float deltaX = negative * 50.f * deltaTime;
 
-                                self.localTransform.position += glm::vec3{deltaX, 0.f, 0.f};
-                            });
-
+                                self.localTransform.position += glm::vec3{deltaX, 0.f, 0.f}; });
 
     glEnable(GL_DEPTH_TEST);
 
     glfwSetCursorPosCallback(window->getWindow(), mouse_callback);
     glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
     glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
+
     ge.saveScene("Aici.path");
-    
+    return 1;
+
     while (!glfwWindowShouldClose(window->getWindow()))
     {
         float currentFrame = glfwGetTime();

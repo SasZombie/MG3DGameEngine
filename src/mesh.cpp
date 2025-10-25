@@ -1,6 +1,6 @@
 #include "mesh.hpp"
 #include "shader.hpp"
-
+#include "Codes.hpp"
 #include <GL/glew.h>
 
 Mesh::Mesh(std::vector<Vertex> nVertices, std::vector<int> nIndices, const std::filesystem::path& pth) noexcept
@@ -106,11 +106,18 @@ void Mesh::setTextures(std::shared_ptr<std::vector<Texture>> nTextures) noexcept
 
 std::ostream &operator<<(std::ostream &os, const Mesh &mesh)
 {
-	os << "mesh " << mesh.path << " texture ";
+	os << mesh.path.string() << '\n';
 
+	if(mesh.textures->empty())
+	{
+		os << 0 << '\n';
+		return os;
+	}
+
+	os << mesh.textures->size() << '\n';
 	for(const auto& texture : *mesh.textures)
 	{
-		os << "id = " << texture.id << " name = " << texture.type << '\n';
+		os << texture.path.string() << '\n';
 	}
 	
 	return os;

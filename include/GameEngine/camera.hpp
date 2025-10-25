@@ -24,10 +24,22 @@ namespace sas
 		float aspect = 16.f/9.f;
 		float viewRange = 1000.f;
 
+		// friend std::ostream& operator<<(std::ostream& os, const CameraSettings& t)
+		// {
+		// 	os << "Camera settings " << t.fov << ' ' << t.aspect << ' ' << t.viewRange << '\n';
+		// 	return os;
+		// }
+
 		friend std::ostream& operator<<(std::ostream& os, const CameraSettings& t)
 		{
-			os << "Camera settings " << t.fov << ' ' << t.aspect << ' ' << t.viewRange << '\n';
+			os << t.fov << ' ' << t.aspect << ' ' << t.viewRange << '\n';
 			return os;
+		}
+
+		friend std::istream& operator>>(std::istream& is, CameraSettings& t)
+		{
+			is >> t.fov >> t.aspect >> t.viewRange;
+			return is;
 		}
 	};
 }
@@ -93,5 +105,6 @@ class Camera : public sas::SceneNode
 
 		
 		friend std::ostream& operator<<(std::ostream& os, const Camera& obj);
+		friend std::istream& operator>>(std::istream& is, Camera& obj);
 };
 

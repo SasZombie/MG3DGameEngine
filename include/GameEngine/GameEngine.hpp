@@ -9,13 +9,14 @@
 
 namespace sas
 {
-    static constexpr size_t winWidth = 1920, winHeight = 1080;
+    static constexpr std::size_t winWidth = 1920, winHeight = 1080;
 
     class GameEngine
     {
         // private:
     public:
         Window window;
+        std::shared_ptr<Camera> camera;
         // Culling trees always present
         OctreeNode cullingOctree;
         // Collision Trees not always present
@@ -23,8 +24,9 @@ namespace sas
         OctreeNode collisionOctree;
         SceneSharedNode sceneNodes;
 
-        Asset *skybox;
+        std::shared_ptr<Asset> skybox;
         std::vector<Asset *> drawingResults;
+
 
         sas::AssetManager manager;
 
@@ -50,12 +52,15 @@ namespace sas
 
         SceneSharedNode getRoot() const noexcept;
         Window *getWindow() noexcept;
+        std::shared_ptr<Camera> getCamera() const noexcept;
 
         // TODO: this requires a lot more work
         // Not sure it will be done
         void mainLoop(const Camera *camera) noexcept;
 
         void saveScene(const std::filesystem::path& path) noexcept;
+
+        void loadScene(const std::filesystem::path &path) noexcept;
 
         ~GameEngine() noexcept = default;
     };

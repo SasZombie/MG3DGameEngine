@@ -94,12 +94,13 @@ GLuint loadBMP(const char *imagepath) noexcept
 
 std::vector<Texture> getDefaultTexture(const char *imagepath) noexcept
 {
-	size_t tex = loadBMP(imagepath);
+	std::size_t tex = loadBMP(imagepath);
 
 	std::vector<Texture> textures;
 	textures.emplace_back();
 	textures[0].id = tex;
 	textures[0].type = "texture_diffuse";
+	textures[0].path = imagepath;
 
 	return textures;
 }

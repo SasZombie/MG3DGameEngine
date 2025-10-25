@@ -1,0 +1,93 @@
+0
+0 0 0
+1 1 1
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+2
+90 1.77778 1000
+0 1 0
+1 -0 0
+0 0 -1
+0 0 0
+1 1 1
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+1
+Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
+Resources/Models/21929_Key_v1.obj
+1
+Resources/Textures/test.bmp
+0.5 -0.4 -2.5
+1 1 1
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+4
+4
+1
+Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
+Resources/Models/CubFata.obj
+1
+Resources/Textures/test.bmp
+-5 0 -5
+1 1 1
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+4
+1
+Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
+Resources/Models/CubFata.obj
+1
+Resources/Textures/test.bmp
+20 0 -5
+1 1 1
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+4
+1
+Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
+Resources/Models/CubFata.obj
+1
+Resources/Textures/test.bmp
+0 0 -5
+1 1 1
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+4
+1
+Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
+Resources/Models/21929_Key_v1.obj
+1
+Resources/Textures/test.bmp
+60 0 0
+5 5 5
+0 0 90
+0 0 0
+1 1 1
+0 0 0
+4
+3
+1
+Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
+Resources/Models/caldare.obj
+1
+Resources/Textures/Skybox.bmp
+0 0 0
+100 100 100
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+4
+5

@@ -104,7 +104,7 @@ int Shader::getId() const noexcept
 
 std::ostream &operator<<(std::ostream &os, const Shader &shader)
 {
-	os << "Shader" << shader.vertP << ' ' << shader.fragP << '\n';
+	os << shader.vertP.string() << ' ' << shader.fragP.string() << '\n';
 
 	return os;
 }

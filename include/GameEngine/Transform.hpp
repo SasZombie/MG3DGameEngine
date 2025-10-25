@@ -52,5 +52,6 @@ namespace sas
         }
 
         friend std::ostream &operator<<(std::ostream &os, const Transform &t);
+        friend std::istream &operator>>(std::istream &is, Transform &t);
     };
 } // namespace sas

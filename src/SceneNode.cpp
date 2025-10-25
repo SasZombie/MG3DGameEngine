@@ -48,10 +48,12 @@ void sas::SceneNode::uppdateAttachedToCamera(const Camera *camera) noexcept
 
 void sas::SceneNode::save(std::ofstream &out) noexcept
 {
-    out << "Local Transform " << localTransform << " world trransform " << worldTransform << '\n';
+    out << localTransform << worldTransform;
 
     for (auto &child : components)
+    {
         child->save(out);
+    }
 }
 
 void sas::SceneNode::uppdateWorldTransform(const Transform &parentWorldTransform) noexcept

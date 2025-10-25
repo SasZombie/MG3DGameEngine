@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include "Codes.hpp"
 #include "Transform.hpp"
 
 struct Camera;

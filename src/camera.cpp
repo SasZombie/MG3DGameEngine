@@ -85,21 +85,17 @@ sas::CameraSettings Camera::getCameraSettings() const noexcept
 void Camera::uppdate(const Camera *camera) noexcept
 {
     (void)camera;
-
-    //  if (auto p = parent.lock()) 
-    //     uppdateWorldTransformCamera(p->worldTransform);
-    // else 
-    //     uppdateWorldTransformCamera(sas::Transform{});  // Root camera
-
-    // uppdateWorldTransformCamera(parent.lock()->worldTransform);
     SceneNode::uppdateAttachedToCamera(camera);
 }
 
 void Camera::save(std::ofstream &out) noexcept
 {
-    out << cameraSettings << *this << '\n';
+    out << sas::SerializeCodes::CAMERA << '\n' << cameraSettings << *this;
 
     SceneNode::save(out);
+
+    out << sas::SerializeCodes::END << '\n';
+
 }
 
 float Camera::getCameraHeight() const noexcept
@@ -153,11 +149,29 @@ glm::vec3 Camera::getCameraUp() const noexcept
     return cameraUp;
 }
 
+// std::ostream &operator<<(std::ostream &os, const Camera &obj)
+// {
+//     os << "Camera Position(x = " << obj.localTransform.position.x << ", y = " << obj.localTransform.position.y << ", z = " << obj.localTransform.position.z << ")\n"
+//         << "Camera Up(x = " << obj.cameraUp.x << ", y = " << obj.cameraUp.y << ", z = " << obj.cameraUp.z << ")\n"
+//         << "Camera Right(x = " << obj.cameraRight.x << ", y = " << obj.cameraRight.y << ", z = " << obj.cameraRight.z << ")\n"
+//         << "Camera View Direction " <<  obj.cameraViewDirection.x << ", y = " << obj.cameraViewDirection.y << ", z = " << obj.cameraViewDirection.z << ")\n";
+//     return os;
+// }
+
 std::ostream &operator<<(std::ostream &os, const Camera &obj)
 {
-    os << "Camera Position(x = " << obj.localTransform.position.x << ", y = " << obj.localTransform.position.y << ", z = " << obj.localTransform.position.z << ")"
-        << "Camera Up(x = " << obj.cameraUp.x << ", y = " << obj.cameraUp.y << ", z = " << obj.cameraUp.z << '\n'
-        << "Camera Right(x = " << obj.cameraRight.x << ", y = " << obj.cameraRight.y << ", z = " << obj.cameraRight.z << '\n'
-        << "Camera View Direction " <<  obj.cameraViewDirection.x << ", y = " << obj.cameraViewDirection.y << ", z = " << obj.cameraViewDirection.z << '\n';
+    os << obj.cameraUp.x << ' ' << obj.cameraUp.y << ' ' << obj.cameraUp.z << '\n'
+       << obj.cameraRight.x << ' ' << obj.cameraRight.y << ' ' << obj.cameraRight.z << '\n'
+       << obj.cameraViewDirection.x << ' ' << obj.cameraViewDirection.y << ' ' << obj.cameraViewDirection.z << '\n';
     return os;
+}
+
+
+std::istream &operator>>(std::istream &is, Camera &obj)
+{
+    is >> obj.cameraSettings >> obj.cameraUp.x >> obj.cameraUp.y >> obj.cameraUp.z 
+       >> obj.cameraRight.x >> obj.cameraRight.y >> obj.cameraRight.z 
+       >> obj.cameraViewDirection.x >> obj.cameraViewDirection.y >> obj.cameraViewDirection.z 
+       >> obj.localTransform >> obj.worldTransform;
+    return is;
 }
