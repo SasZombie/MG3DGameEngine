@@ -1,4 +1,6 @@
 #include "Asset.hpp"
+#include "ScriptTransform.hpp"
+#include "ScriptInstance.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -9,7 +11,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #pragma GCC diagnostic pop
-
 
 sas::Asset::Asset(Window *nwindow) noexcept
     : window(nwindow)
@@ -94,7 +95,8 @@ void sas::Asset::uppdateAttachedToCamera(const Camera *camera) noexcept
 
 void sas::Asset::save(std::ofstream &out) noexcept
 {
-    out << SerializeCodes::ASSET << '\n' << *shader << *mesh;
+    out << SerializeCodes::ASSET << '\n'
+        << *shader << *mesh;
 
     SceneNode::save(out);
 
@@ -128,10 +130,8 @@ void sas::Asset::uppdate(const Camera *camera) noexcept
 {
     for (auto &cb : callbacks)
     {
-        cb();
+        cb(*this);
     }
-    // draw(camera);
-
     // This is necesarry to not dereference nullptr
     if (collisionObject)
     {
@@ -171,12 +171,36 @@ void sas::Asset::addCallback(Callback cb) noexcept
     callbacks.push_back(std::move(cb));
 }
 
-void sas::Asset::onCollision(const Signal<Asset&, Asset&>::collsionCallback& cb) noexcept
+void sas::Asset::addCallback(const std::filesystem::path &scriptPath) noexcept
+{
+    const auto &tokens = getAllTokens(scriptPath);
+
+    const std::string fileNoExt = scriptPath.stem().string();
+
+    const std::string filePath = "ScriptsGen/" + fileNoExt + ".cpp";
+    generateCPPClass(tokens, filePath, fileNoExt);
+    
+    const std::string dllFile = script::createDLL(filePath, fileNoExt);
+
+    auto scriptInstance = std::make_shared<script::ScriptInstance>();
+
+    if (!scriptInstance->load(dllFile))
+    {
+        std::cerr << "Failed to load script " << dllFile << '\n';
+        return;
+    }
+
+    callbacks.emplace_back([scriptInstance](sas::Asset& self){
+        scriptInstance->callUpdate(self);
+    });
+}
+
+void sas::Asset::onCollision(const Signal<Asset &, Asset &>::collsionCallback &cb) noexcept
 {
     this->signals.connect(cb);
 }
 
-void sas::Asset::emit(Asset& other) noexcept
+void sas::Asset::emit(Asset &other) noexcept
 {
     signals.emit(*this, other);
 }

@@ -22,6 +22,9 @@ set(ENGINE_SOURCES
     src/Transform.cpp
     src/GameEngine.cpp
     src/AssetManager.cpp
+    src/ScriptTransform.cpp
+    src/Globals.cpp
+    src/ScriptInstance.cpp
 )
 
 # Grab all from external
@@ -45,7 +48,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 add_executable(main ${SOURCESNODES})
 
-target_link_libraries(main PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw sfml-audio)
+set_target_properties(main PROPERTIES ENABLE_EXPORTS ON)
+target_link_libraries(main PRIVATE glut GL GLU X11 Xxf86vm Xrandr pthread Xi GLEW glfw)
 
 if(CMAKE_BUILD_TYPE STREQUAL "debug")
     target_compile_definitions(main PRIVATE debugMode=1)

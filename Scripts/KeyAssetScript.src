@@ -1,0 +1,8 @@
+float variable = 0
+
+void update
+{
+    obj.localTransform.rotation.z += 5 * dt
+    if obj.localTransform.rotation.z >= M_PI * 2
+        obj.localTransform.rotation.z = 0
+}

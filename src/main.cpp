@@ -46,7 +46,7 @@ bool showHitBoxes = true;
 
 Window *window;
 
-int main(int argc, char **argv)
+int main2(int argc, char **argv)
 {
     sas::GameEngine ge;
 
@@ -93,9 +93,10 @@ int main(int argc, char **argv)
     }
 }
 
-int main2(int argc, char **argv)
+int main(int argc, char **argv)
 {
     sas::GameEngine ge;
+    
     window = ge.getWindow();
     camera = ge.getCamera();
 
@@ -156,21 +157,17 @@ int main2(int argc, char **argv)
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
     ge.addSceneNode(root, KeyAsset1);
 
-    float rotation = 0;
     int negative = 1;
+    
+    float rotation = 0;
 
-    KeyAsset1->addCallback([&window = KeyAsset1]()
-                           {
-                               window->localTransform.rotation.z += 5.f * sas::Globals::instance().getDeltaTime();
+    KeyAsset1->addCallback("Scripts/KeyAssetScript.src");
 
-                               if (window->localTransform.rotation.z >= M_PI * 2.f)
-                                   window->localTransform.rotation.z = 0.f; });
-
-    CubeAsset3->addCallback([&window = CubeAsset3, &negative]()
+    CubeAsset3->addCallback([&negative](sas::Asset& self)
                             {
                                 float deltaX = negative * 2.f * sas::Globals::instance().getDeltaTime();
 
-                                window->localTransform.position += glm::vec3{deltaX, 0.f, 0.f}; });
+                                self.localTransform.position += glm::vec3{deltaX, 0.f, 0.f}; });
 
     CubeAsset3->onCollision([&negative](sas::Asset &self, sas::Asset &other)
                             {
@@ -186,8 +183,6 @@ int main2(int argc, char **argv)
     glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
     glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    ge.saveScene("Aici.path");
-    return 1;
 
     while (!glfwWindowShouldClose(window->getWindow()))
     {

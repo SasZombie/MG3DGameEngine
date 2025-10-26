@@ -16,7 +16,7 @@ namespace sas
 
     class Asset : public SceneNode
     {
-        using Callback = std::function<void()>;
+        using Callback = std::function<void(Asset&)>;
     public:
         int uniformShaderID;
 
@@ -52,6 +52,7 @@ namespace sas
         void setShaderUniformID(int id) noexcept;
 
         void addCallback(Callback cb) noexcept;
+        void addCallback(const std::filesystem::path& scriptPath) noexcept;
         void onCollision(const Signal<Asset&, Asset&>::collsionCallback& cb) noexcept;
         void emit(Asset& other) noexcept;
 

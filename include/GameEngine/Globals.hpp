@@ -1,8 +1,19 @@
 #pragma once
 
+#ifdef _WIN32
+    #ifdef BUILDING_GAME_ENGINE
+        #define ENGINE_API __declspec(dllexport)
+    #else
+        #define ENGINE_API __declspec(dllimport)
+    #endif
+#else
+    #define ENGINE_API
+#endif
+
+
 namespace sas
 {
-    class Globals
+    class ENGINE_API Globals
     {
     public:
         Globals(const Globals &) = delete;
@@ -10,11 +21,7 @@ namespace sas
         Globals(Globals &&) = delete;
         Globals &operator=(Globals &&) = delete;
 
-        static Globals &instance() noexcept
-        {
-            static Globals instance;
-            return instance;
-        }
+        static Globals &instance() noexcept;
 
         void setDeltaTime(float dt) noexcept
         {
