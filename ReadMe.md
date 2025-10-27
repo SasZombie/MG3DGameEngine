@@ -60,6 +60,6 @@ While the system has the requested features, there are also a some problems:
 - The translator requires more work to have a proper implementation
 
 ## 4. Credits
-[1]: Dr. Iulia-Cristina Stănică, Lecturer, Department of Engineering in Foreign Languages, from National University of Science and Technology POLITEHNICA Bucharest
-[2]: https://www.baeldung.com/cs/quadtrees-and-octrees, https://www.youtube.com/watch?v=9sDlP6glQ0c
+[1]: Dr. Iulia-Cristina Stănică, Lecturer, Department of Engineering in Foreign Languages, from National University of Science and Technology POLITEHNICA Bucharest  
+[2]: https://www.baeldung.com/cs/quadtrees-and-octrees, https://www.youtube.com/watch?v=9sDlP6glQ0c  
 [3]: https://www.youtube.com/watch?v=dn0hUgsok9M
