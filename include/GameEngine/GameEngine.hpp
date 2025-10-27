@@ -5,6 +5,7 @@
 #include "SceneNode.hpp"
 #include "OctreeNode.hpp"
 #include "window.hpp"
+#include "UI.hpp"
 #include "AssetManager.hpp"
 
 namespace sas
@@ -15,6 +16,8 @@ namespace sas
     {
         // private:
     public:
+        ImGuiIO io;
+
         Window window;
         std::shared_ptr<Camera> camera;
         // Culling trees always present

@@ -2,6 +2,7 @@
 #include "mesh.hpp"
 #include "texture.hpp"
 #include "meshLoaderObj.hpp"
+#include "UI.hpp"
 
 std::shared_ptr<Mesh> sas::AssetManager::loadMesh(const std::string &path) noexcept
 {
@@ -26,7 +27,7 @@ std::shared_ptr<Mesh> sas::AssetManager::loadMesh(const std::string &path, const
 
     auto mesh = std::make_shared<Mesh>(loadObj(path, tex));
     meshCache[path] = mesh;
-    
+
     return mesh;
 }
 
@@ -40,7 +41,7 @@ std::shared_ptr<std::vector<Texture>> sas::AssetManager::loadTexture(const std::
 
     auto tex = std::make_shared<std::vector<Texture>>(getDefaultTexture(path.c_str()));
     textureCache[path] = tex;
-    
+
     return tex;
 }
 
@@ -63,5 +64,10 @@ std::shared_ptr<Shader> sas::AssetManager::loadShader(const std::string &vert, c
 
 std::shared_ptr<sas::Asset> sas::AssetManager::createAsset(const std::shared_ptr<Shader> &shader, const std::shared_ptr<Mesh> &mesh, Window *window) noexcept
 {
-    return std::make_shared<Asset>(shader, mesh, window);
+    const auto asset = std::make_shared<Asset>(shader, mesh, window);
+
+    // Could work
+    // asset->addNode(std::make_shared<UI>(window));
+
+    return asset;
 }

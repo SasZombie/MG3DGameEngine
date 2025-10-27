@@ -10,6 +10,7 @@ namespace sas
         ASSET,
         CAMERA,
         SKYBOX,
+        UI,
         END,
         ENDROOT
     };

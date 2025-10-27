@@ -4,6 +4,13 @@
 sas::GameEngine::GameEngine() noexcept
     : window("Game Engine", winWidth, winHeight)
 {
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window.getWindow(), true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
     camera = std::make_shared<Camera>(glm::vec3{0.f, 0.f, 0.f});
     // Preallocate some memory
     drawingResults.reserve(100);
@@ -59,6 +66,10 @@ std::shared_ptr<Camera> sas::GameEngine::getCamera() const noexcept
 
 void sas::GameEngine::uppdate(const Camera *ncamera) noexcept
 {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+
+    ImGui::NewFrame();
     // If no skybox, brench predictor will
     // Always evaluate this to false
     // So still fast
@@ -89,6 +100,9 @@ void sas::GameEngine::uppdate(const Camera *ncamera) noexcept
     }
 
     drawingResults.clear();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void sas::GameEngine::saveScene(const std::filesystem::path &path) noexcept
@@ -125,7 +139,7 @@ void sas::GameEngine::loadScene(const std::filesystem::path &path) noexcept
         {
 
             int code;
-            // Asset code skiped
+            // "Asset" identifier skiped
             in >> code;
 
             std::string vert, frag, obj;
@@ -149,6 +163,20 @@ void sas::GameEngine::loadScene(const std::filesystem::path &path) noexcept
             skybox = asset;
 
             currentTreeNode = asset;
+
+            break;
+        }
+
+        case SerializeCodes::UI:
+        {
+            auto ui = std::make_shared<UI>(&window);
+            in >> ui->localTransform;
+            in >> ui->worldTransform;
+
+
+            currentTreeNode->addNode(ui);
+
+            currentTreeNode = ui;
 
             break;
         }

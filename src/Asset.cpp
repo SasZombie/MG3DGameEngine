@@ -15,17 +15,20 @@
 sas::Asset::Asset(Window *nwindow) noexcept
     : window(nwindow)
 {
+    name = "Asset";
 }
 
 sas::Asset::Asset(std::shared_ptr<Mesh> nmesh, Window *nwindow) noexcept
     : mesh(nmesh), window(nwindow)
 
 {
+    name = "Asset";
 }
 
 sas::Asset::Asset(std::shared_ptr<Shader> nshader, std::shared_ptr<Mesh> nmesh, Window *nwindow) noexcept
     : shader(nshader), mesh(nmesh), window(nwindow)
 {
+    name = "Asset";
     shader->use();
     setShaderUniformID(glGetUniformLocation(shader->getId(), "MVP"));
 }
@@ -103,6 +106,11 @@ void sas::Asset::save(std::ofstream &out) noexcept
     out << SerializeCodes::END << '\n';
 }
 
+glm::vec4 sas::Asset::getClipSpacePos() const noexcept
+{
+    return ProjectionMatrix * ViewMatrix * glm::vec4(worldTransform.position, 1.0);
+}
+
 void sas::Asset::addCollisionObject(CollisionObject *colObj) noexcept
 {
     collisionObject = colObj;
@@ -117,11 +125,11 @@ sas::CollisionObject *sas::Asset::getCollisionObject() const noexcept
 {
 #ifdef debugMode
 
-    // if (!collisionObject)
-    // {
-    //     std::cerr << "Warning! Calling getCollisionObject without an collision object\n";
-    //     return {};
-    // }
+    if (!collisionObject)
+    {
+        std::cerr << "Warning! Calling getCollisionObject without an collision object\n";
+        return {};
+    }
 #endif
     return collisionObject;
 }

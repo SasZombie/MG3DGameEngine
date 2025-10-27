@@ -31,7 +31,7 @@ namespace sas
         CollisionObject* collisionObject = nullptr;
         Window *window;
         std::vector<Callback> callbacks;
-
+        
         Signal<Asset&, Asset&> signals;
         
     public:
@@ -59,6 +59,8 @@ namespace sas
         void uppdate(const Camera *camera) noexcept override;
         void uppdateAttachedToCamera(const Camera *camera) noexcept override;
         void save(std::ofstream& out) noexcept override;
+
+        glm::vec4 getClipSpacePos() const noexcept override;
 
 
         void addCollisionObject(CollisionObject *colObj) noexcept;

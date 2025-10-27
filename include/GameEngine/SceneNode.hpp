@@ -14,8 +14,7 @@ namespace sas
     
     struct SceneNode : public std::enable_shared_from_this<SceneNode>
     {
-
-        
+        std::string name;
         std::weak_ptr<SceneNode> parent;
         glm::vec3 velocity{0.f};
         glm::vec3 acceleration{0.f};
@@ -36,7 +35,10 @@ namespace sas
         virtual void uppdate(const Camera* camera) noexcept;
         virtual void uppdateAttachedToCamera(const Camera* camera) noexcept;
 
+        virtual glm::vec4 getClipSpacePos() const noexcept;
+
         virtual void save(std::ofstream &out) noexcept;
+
 
         void uppdateWorldTransform(const Transform& parentWorldTransform) noexcept;
         void uppdateWorldTransformCamera(const Transform& parentWorldTransform) noexcept;

@@ -27,8 +27,8 @@ Resources/Textures/test.bmp
 0 0 0
 1 1 1
 0 0 0
-4
-4
+5
+5
 1
 Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
 Resources/Models/CubFata.obj
@@ -40,7 +40,7 @@ Resources/Textures/test.bmp
 0 0 0
 1 1 1
 0 0 0
-4
+5
 1
 Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
 Resources/Models/CubFata.obj
@@ -52,7 +52,7 @@ Resources/Textures/test.bmp
 0 0 0
 1 1 1
 0 0 0
-4
+5
 1
 Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
 Resources/Models/CubFata.obj
@@ -65,6 +65,13 @@ Resources/Textures/test.bmp
 1 1 1
 0 0 0
 4
+0 0 0
+1 1 1
+0 0 0
+0 0 0
+1 1 1
+0 0 0
+5
 1
 Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
 Resources/Models/21929_Key_v1.obj
@@ -76,7 +83,7 @@ Resources/Textures/test.bmp
 0 0 0
 1 1 1
 0 0 0
-4
+5
 3
 1
 Shaders/vertex_shader.glsl Shaders/fragment_shader.glsl
@@ -89,5 +96,5 @@ Resources/Textures/Skybox.bmp
 0 0 0
 1 1 1
 0 0 0
-4
 5
+6

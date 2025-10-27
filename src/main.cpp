@@ -9,7 +9,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <GL/glew.h>
-#include <GL/freeglut.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 #include <GLFW/glfw3.h>
@@ -22,9 +21,8 @@
 #include "meshLoaderObj.hpp"
 #include "Globals.hpp"
 #include "texture.hpp"
+#include "UI.hpp"
 #include "GameEngine.hpp"
-// #include "shader.hpp"
-// #include "window.hpp"
 
 static void mouse_callback(GLFWwindow *window, double xpos, double ypos) noexcept;
 static void mouse_callback(GLFWwindow *window, int button, int action, int mods) noexcept;
@@ -37,8 +35,6 @@ float yaw = -90.f, pitch = 0.f;
 
 double lastX = 400, lastY = 300;
 
-glm::vec3 keyPosition(322.f, -20.f, 404.f);
-
 constexpr size_t winWidth = 1920, winHeight = 1080;
 
 std::shared_ptr<Camera> camera;
@@ -46,7 +42,7 @@ bool showHitBoxes = true;
 
 Window *window;
 
-int main2(int argc, char **argv)
+int main(int argc, char **argv)
 {
     sas::GameEngine ge;
 
@@ -93,10 +89,10 @@ int main2(int argc, char **argv)
     }
 }
 
-int main(int argc, char **argv)
+int main2(int argc, char **argv)
 {
     sas::GameEngine ge;
-    
+
     window = ge.getWindow();
     camera = ge.getCamera();
 
@@ -130,6 +126,7 @@ int main(int argc, char **argv)
     glm::vec3 lightColor = glm::vec3(1.f);
     glm::vec3 lightPos = glm::vec3(10.f, 0.f, 0.f);
 
+    KeyAsset1->name = "Key";
     KeyAsset1->scale({5.f, 5.f, 5.f});
     KeyAsset1->translate({60.f, 0.f, 0.f});
     KeyAsset1->rotate({0.f, 0.f, 90.f});
@@ -157,13 +154,15 @@ int main(int argc, char **argv)
     CamerasKey->translate({0.5f, -0.4f, -2.5f});
     ge.addSceneNode(root, KeyAsset1);
 
+    CubeAsset3->addNode(std::make_shared<sas::UI>(window));
+
     int negative = 1;
-    
+
     float rotation = 0;
 
     KeyAsset1->addCallback("Scripts/KeyAssetScript.src");
 
-    CubeAsset3->addCallback([&negative](sas::Asset& self)
+    CubeAsset3->addCallback([&negative](sas::Asset &self)
                             {
                                 float deltaX = negative * 2.f * sas::Globals::instance().getDeltaTime();
 
@@ -183,6 +182,9 @@ int main(int argc, char **argv)
     glfwSetMouseButtonCallback(window->getWindow(), mouse_callback);
     glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+    ge.saveScene("Aici.path");
+
+    return 1;
 
     while (!glfwWindowShouldClose(window->getWindow()))
     {
@@ -195,12 +197,23 @@ int main(int argc, char **argv)
         processKeyboardInput();
         window->clear();
 
+        // Why are these here:
+        // I realized later in the development
+        // That certain assets are drawn differently,
+        // That a skybox should enable some gl stuff
+        // The light sources should enable these 3
+        // And so on. This implies the usage of another
+        // Specialization of Asset such as Iluminating Asset
+        // SkyBox assets and so on. I could encapsulate
+        // These as well, but I am not sure if it would bring
+        // Anything of value to the scope of this project
         glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
         glUniform3f(glGetUniformLocation(shader.get()->getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(glGetUniformLocation(shader.get()->getId(), "viewPos"), camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
 
         ge.uppdate(camera.get());
 
+    
         window->update();
     }
 }
