@@ -79,9 +79,9 @@ void sas::GameEngine::uppdate(const Camera *ncamera) noexcept
         glDepthFunc(GL_LEQUAL);
 
         skybox->uppdateWorldTransform({});
-        skybox->uppdate(ncamera);
+        skybox->uppdate(camera.get());
         // Skybox always visible
-        skybox->draw(ncamera);
+        skybox->draw(camera.get());
 
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
@@ -90,13 +90,13 @@ void sas::GameEngine::uppdate(const Camera *ncamera) noexcept
     collisionOctree.checkCollisions();
 
     sceneNodes->uppdateWorldTransform({});
-    sceneNodes->uppdate(ncamera);
+    sceneNodes->uppdate(camera.get());
 
-    cullingOctree.querryView(ncamera, drawingResults);
+    cullingOctree.querryView(camera.get(), drawingResults);
 
     for (const auto &elem : drawingResults)
     {
-        elem->draw(ncamera);
+        elem->draw(camera.get());
     }
 
     drawingResults.clear();
@@ -122,6 +122,12 @@ void sas::GameEngine::loadScene(const std::filesystem::path &path) noexcept
 {
     int cdepth = 0;
     std::ifstream in(path);
+
+    if(!in.is_open())
+    {
+        std::cerr << "Warning! Cannot open file " << path << '\n';
+        return;
+    }
     SerializeCodes current;
     in >> current;
 

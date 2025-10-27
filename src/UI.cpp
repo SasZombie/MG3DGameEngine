@@ -14,6 +14,11 @@ void sas::UI::save(std::ofstream& out) noexcept
     SceneNode::save(out);
 }
 
+//This is not how it is supposed to be drawn
+//Instead it should be used in the draw function
+//Again this is a short-coming due to the lack of
+//Specializations of Asset, explained in the 
+//Read me
 void sas::UI::uppdate(const Camera *camera) noexcept
 {
     const auto &pos = parent.lock();

@@ -18,6 +18,7 @@ namespace sas
 
     ///@brief
     /*
+        Read me [3]
         The collision when something is attached to a camerais not yet
         Implemented
         This is because unlike an average asset

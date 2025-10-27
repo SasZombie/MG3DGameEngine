@@ -37,7 +37,6 @@ namespace sas
         ~Globals() noexcept = default;
 
         float deltaTime = 0.f;
-        bool someFlag = false;
     };
 
 } // namespace sas

@@ -1,6 +1,6 @@
 /// @brief
 /// Not really sure what are we supposed
-/// To do here? Wrapper around glm?
+/// Wrapper around glm
 /// Ngl not gonna use anything I write here
 /// Since glm is way more optimized with SIMD and stuff
 #pragma once

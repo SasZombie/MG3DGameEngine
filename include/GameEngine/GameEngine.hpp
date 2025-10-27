@@ -14,8 +14,7 @@ namespace sas
 
     class GameEngine
     {
-        // private:
-    public:
+    private:
         ImGuiIO io;
 
         Window window;

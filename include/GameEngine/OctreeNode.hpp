@@ -17,6 +17,8 @@
 
 namespace sas
 {
+    ///@brief
+    /// Read me [2]
     //TODO: This class cannot update itself at the moment
     //That means if I have multiple assets and they change
     //Position, they should be placed in a different leaf
