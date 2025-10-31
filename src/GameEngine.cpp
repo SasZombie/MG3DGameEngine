@@ -107,7 +107,7 @@ void sas::GameEngine::uppdate(const Camera *ncamera) noexcept
 
 void sas::GameEngine::saveScene(const std::filesystem::path &path) noexcept
 {
-    std::ofstream out(path);
+    std::ofstream out(path, std::ios::binary);
 
     out << SerializeCodes::ROOT << '\n';
     sceneNodes->save(out);
@@ -121,7 +121,7 @@ void sas::GameEngine::saveScene(const std::filesystem::path &path) noexcept
 void sas::GameEngine::loadScene(const std::filesystem::path &path) noexcept
 {
     int cdepth = 0;
-    std::ifstream in(path);
+    std::ifstream in(path, std::ios::binary);
 
     if(!in.is_open())
     {

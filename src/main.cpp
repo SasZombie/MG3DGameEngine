@@ -70,7 +70,6 @@ int main(int argc, char **argv)
 
     auto SkyBoxAsset = ge.addAsset(shader, "Resources/Models/caldare.obj", "Resources/Textures/Skybox.bmp");
 
-    float scaleMax = 1000.f;
     sas::CollisionObject *CubeCollisionObject = new sas::AABB;
     sas::CollisionObject *Cube2CollisonObject = new sas::AABB;
     sas::CollisionObject *Cube3CollisonObject = new sas::AABB;
@@ -113,8 +112,6 @@ int main(int argc, char **argv)
     CubeAsset3->addNode(std::make_shared<sas::UI>(window));
 
     int negative = 1;
-
-    float rotation = 0;
 
     KeyAsset1->addCallback("Scripts/KeyAssetScript.src");
 

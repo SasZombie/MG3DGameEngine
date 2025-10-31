@@ -32,8 +32,7 @@ void sas::ParticleSystem::uppdate(const Camera *camera) noexcept
             p.position += p.velocity * dt;
         }
     }
-    std::cout << "Appelat\n";
-
+    
     draw(camera);
 
     particles.erase(
