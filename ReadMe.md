@@ -57,7 +57,7 @@ While the system has the requested features, there are also a some problems:
 - Callbacks are limited; I cannot store callable objects in C++ and rely on script paths.
 - Asset class should have multiple specializations: Illumination Asset, Moving Asset, SkyBox Asset.
 - UI is drawn incorrectly and should be refactored into another Drawable/Asset class.
-- The translator requires more work to have a proper implementation
+- The translator requires more work to have a proper implementation  
 While these are major problems, I dont know if fixing would add anything of value to the project.
 ## 4. Credits
 [1]: Dr. Iulia-Cristina Stănică, Lecturer, Department of Engineering in Foreign Languages, from National University of Science and Technology POLITEHNICA Bucharest  
