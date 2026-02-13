@@ -6,6 +6,8 @@ std::string sas::script::createDLL(const std::string &filePath, const std::strin
     const std::string dllFile =
 #ifdef _WIN32
         "ScriptsShared/" + outPath + ".dll";
+#elif __APPLE__
+        "ScriptsShared/" + outPath + ".dylib";
 #else
         "ScriptsShared/" + outPath + ".so";
 #endif

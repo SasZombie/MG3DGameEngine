@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-//Handling keyboard actions
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+// Handling keyboard actions
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-	Window* wind = (Window*) glfwGetWindowUserPointer(window);
+	Window *wind = (Window *)glfwGetWindowUserPointer(window);
 
 	if (action != GLFW_RELEASE)
 		wind->setKey(key, true);
@@ -13,10 +13,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		wind->setKey(key, false);
 }
 
-//Handling mouse actions
-static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+// Handling mouse actions
+static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 {
-	Window* wind = (Window*)glfwGetWindowUserPointer(window);
+	Window *wind = (Window *)glfwGetWindowUserPointer(window);
 
 	if (action != GLFW_RELEASE)
 		wind->setMouseButton(button, true);
@@ -24,22 +24,22 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
 		wind->setMouseButton(button, false);
 }
 
-//Handling cursor position
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+// Handling cursor position
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 {
-	Window* wind = (Window*)glfwGetWindowUserPointer(window);
+	Window *wind = (Window *)glfwGetWindowUserPointer(window);
 	wind->setMousePos(xpos, ypos);
 }
 
-
-static void error_callback( int error, const char *msg ) 
+static void error_callback(int error, const char *msg)
 {
-    //Endl for buffer flush on error
-	std::cerr << "\033[31m" << " [" + std::to_string(error) + "] " + msg + '\n' << "\033[0m "<<  std::endl;
+	// Endl for buffer flush on error
+	std::cerr << "\033[31m" << " [" + std::to_string(error) + "] " + msg + '\n'
+			  << "\033[0m " << std::endl;
 	//			  ^ red color                                                       ^ reset
 }
 
-Window::Window(const char* nName, int nWidth, int nHeight)
+Window::Window(const char *nName, int nWidth, int nHeight)
 	: name(nName), width(nWidth), height(nHeight)
 {
 	init();
@@ -52,7 +52,7 @@ Window::~Window() noexcept
 
 void Window::init()
 {
-	glfwSetErrorCallback( error_callback );
+	glfwSetErrorCallback(error_callback);
 
 	if (!glfwInit())
 	{
@@ -63,6 +63,13 @@ void Window::init()
 		std::cout << "Successfully initializing glfw!\n";
 	}
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// If you are on Wayland/MacOS, this is often required:
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 	window = glfwCreateWindow(width, height, name, NULL, NULL);
 
 	if (window == nullptr)
@@ -75,18 +82,25 @@ void Window::init()
 
 	glfwMakeContextCurrent(window);
 
-	//callbacks for user input
+	// callbacks for user input
 	glfwSetWindowUserPointer(window, this);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
-	if (glewInit() != GLEW_OK)
+	glewExperimental = true;
+
+	GLenum err = glewInit();
+
+	if (err != GLEW_OK)
 	{
+		std::cerr << "Glew Error " << glewGetErrorString(err) << '\n';
+
 		throw std::runtime_error("Failed to initialize GLEW");
 	}
 	else
 	{
+		glGetError();
 		std::cout << "Successfully initializing glew!\n";
 	}
 
@@ -106,7 +120,7 @@ void Window::clear() noexcept
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-GLFWwindow* Window::getWindow() const noexcept
+GLFWwindow *Window::getWindow() const noexcept
 {
 	return window;
 }
@@ -123,7 +137,7 @@ int Window::getHeight()
 
 void Window::setKey(int key, bool ok)
 {
-	this -> keys[key] = ok;
+	this->keys[key] = ok;
 }
 
 void Window::setMouseButton(int button, bool ok)
@@ -143,13 +157,13 @@ void Window::getMousePos(double &nXpos, double &nYpos)
 	nYpos = this->ypos;
 }
 
-//Handling key pressed
+// Handling key pressed
 bool Window::isPressed(int key)
 {
 	return keys[key];
 }
 
-//Handling mouse buttons pressed
+// Handling mouse buttons pressed
 bool Window::isMousePressed(int button)
 {
 	return mouseButtons[button];
